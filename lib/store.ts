@@ -5,7 +5,7 @@ import type { Website, Category } from './types';
 // Create a single store instance
 export const store = createStore();
 
-// Define atoms
+// Define atoms with initial values
 export const websitesAtom = atom<Website[]>([]);
 export const categoriesAtom = atom<Category[]>([]);
 export const searchQueryAtom = atom('');
@@ -18,3 +18,12 @@ store.set(categoriesAtom, []);
 store.set(searchQueryAtom, '');
 store.set(selectedCategoryAtom, null);
 store.set(isAdminModeAtom, false);
+
+// Helper function to reset store
+export const resetStore = () => {
+  store.set(websitesAtom, []);
+  store.set(categoriesAtom, []);
+  store.set(searchQueryAtom, '');
+  store.set(selectedCategoryAtom, null);
+  store.set(isAdminModeAtom, false);
+};

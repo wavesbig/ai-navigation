@@ -1,135 +1,170 @@
 "use client";
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useAtom } from 'jotai';
-import { motion, AnimatePresence } from 'framer-motion';
-import { websitesAtom, categoriesAtom, searchQueryAtom, selectedCategoryAtom, isAdminModeAtom } from '@/lib/atoms';
-import { getWebsites, getCategories } from '@/lib/db';
+import { motion, useScroll, useTransform } from 'framer-motion';
+import { websitesAtom, categoriesAtom, searchQueryAtom, selectedCategoryAtom } from '@/lib/atoms';
+import { getWebsites, getCategories, incrementVisits } from '@/lib/db';
 import WebsiteGrid from '@/components/website/website-grid';
-import CategoryFilter from '@/components/category-filter';
-import { SearchBox } from '@/components/search-box';
+import { PersistentHeader } from '@/components/persistent-header';
+import { Typewriter } from '@/components/typewriter';
 import { Brain, Cpu, Sparkles, Zap } from 'lucide-react';
+import {
+  heroContainerVariants,
+  heroTitleVariants,
+  heroDescriptionVariants,
+  backgroundPatternVariants,
+  floatingIconVariants,
+  gridContainerVariants,
+} from '@/lib/animations';
+import type { Website } from '@/lib/types';
 
 export default function Home() {
   const [websites, setWebsites] = useAtom(websitesAtom);
   const [categories, setCategories] = useAtom(categoriesAtom);
   const [searchQuery, setSearchQuery] = useAtom(searchQueryAtom);
   const [selectedCategory] = useAtom(selectedCategoryAtom);
-  const [isAdmin] = useAtom(isAdminModeAtom);
+  const contentRef = useRef<HTMLDivElement>(null);
+  const { scrollY } = useScroll();
+
+  // Enhanced scroll-based animations
+  const heroOpacity = useTransform(scrollY, [0, 400], [1, 0]);
+  const heroScale = useTransform(scrollY, [0, 400], [1, 0.9]);
+  const heroTranslateY = useTransform(scrollY, [0, 400], [0, -100]);
+  const isScrolled = useTransform(scrollY, (value) => value > 300);
 
   useEffect(() => {
-    const loadData = async () => {
-      const websiteData = getWebsites(isAdmin ? undefined : 'approved');
-      const categoryData = getCategories();
-      
-      setWebsites(websiteData);
-      setCategories(categoryData);
+    const loadData = () => {
+      try {
+        const websiteData = getWebsites('approved');
+        const categoryData = getCategories();
+        setWebsites(websiteData || []);
+        setCategories(categoryData || []);
+      } catch (error) {
+        console.error('Error loading data:', error);
+        setWebsites([]);
+        setCategories([]);
+      }
     };
 
     loadData();
-  }, [isAdmin, setWebsites, setCategories]);
+  }, [setWebsites, setCategories]);
 
   const filteredWebsites = websites.filter(website => {
-    const matchesSearch = website.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         website.description.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory = !selectedCategory || website.category_id === selectedCategory;
+    const matchesSearch = !searchQuery || 
+      website.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      website.description.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesCategory = selectedCategory === null || website.category_id === selectedCategory;
     return matchesSearch && matchesCategory;
   });
 
+  const handleVisit = (website: Website) => {
+    incrementVisits(website.id);
+    window.open(website.url, '_blank');
+  };
+
   return (
-    <div className="relative">
-      {/* 背景装饰 */}
-      <div className="absolute inset-0 -z-10 overflow-hidden">
+    <div className="relative min-h-screen" ref={contentRef}>
+      {/* Animated Background */}
+      <motion.div 
+        className="fixed inset-0 -z-10 overflow-hidden"
+        style={{ opacity: heroOpacity }}
+      >
         <div className="absolute inset-0 bg-gradient-to-b from-background via-background/80 to-background" />
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 0.1 }}
-          transition={{ duration: 1 }}
+          variants={backgroundPatternVariants}
+          initial="hidden"
+          animate="visible"
           className="absolute inset-0"
           style={{
-            backgroundImage: `radial-gradient(circle at 50% 50%, var(--primary) 1px, transparent 1px)`,
+            backgroundImage: `radial-gradient(circle at 50% 50%, hsl(var(--primary)) 1px, transparent 1px)`,
             backgroundSize: '50px 50px',
           }}
         />
-      </div>
+      </motion.div>
 
-      {/* 主要内容 */}
+      {/* Persistent Header */}
+      <PersistentHeader
+        searchQuery={searchQuery}
+        onSearchChange={setSearchQuery}
+        categories={categories}
+        isScrolled={isScrolled.get()}
+      />
+
+      {/* Main Content */}
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="relative space-y-2"
+        variants={heroContainerVariants}
+        initial="hidden"
+        animate="visible"
+        className="relative"
       >
-        {/* Hero 区域 */}
-        <div className="relative py-8">
-          <motion.div 
-            className="absolute inset-0 -z-10"
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.8 }}
-          >
-            <div className="absolute left-1/4 top-1/4 transform -translate-x-1/2 -translate-y-1/2">
-              <Brain className="w-12 h-12 text-primary/20" />
-            </div>
-            <div className="absolute right-1/4 top-1/3 transform translate-x-1/2 -translate-y-1/2">
-              <Cpu className="w-10 h-10 text-primary/15" />
-            </div>
-            <div className="absolute left-1/3 bottom-1/4 transform -translate-x-1/2 translate-y-1/2">
-              <Sparkles className="w-8 h-8 text-primary/10" />
-            </div>
-            <div className="absolute right-1/3 bottom-1/3 transform translate-x-1/2 translate-y-1/2">
-              <Zap className="w-9 h-9 text-primary/10" />
-            </div>
-          </motion.div>
+        {/* Hero Section */}
+        <motion.div 
+          className="relative py-16"
+          style={{ 
+            opacity: heroOpacity, 
+            scale: heroScale,
+            y: heroTranslateY 
+          }}
+        >
+          {/* Floating Icons */}
+          <div className="absolute inset-0 -z-10">
+            {[
+              { Icon: Brain, position: "left-1/4 top-1/4", size: "w-12 h-12", delay: 0 },
+              { Icon: Cpu, position: "right-1/4 top-1/3", size: "w-10 h-10", delay: 1 },
+              { Icon: Sparkles, position: "left-1/3 bottom-1/4", size: "w-8 h-8", delay: 2 },
+              { Icon: Zap, position: "right-1/3 bottom-1/3", size: "w-9 h-9", delay: 3 }
+            ].map(({ Icon, position, size, delay }, index) => (
+              <motion.div
+                key={index}
+                className={`absolute transform -translate-x-1/2 -translate-y-1/2 ${position}`}
+                variants={floatingIconVariants}
+                custom={delay}
+                initial="hidden"
+                animate="visible"
+              >
+                <Icon className={`${size} text-primary/20`} />
+              </motion.div>
+            ))}
+          </div>
 
-          <div className="max-w-4xl mx-auto text-center space-y-4">
-            <motion.div
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              className="space-y-2"
-            >
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight">
+          <div className="max-w-4xl mx-auto text-center space-y-8">
+            {/* Title */}
+            <motion.div className="space-y-4">
+              <motion.h1
+                variants={heroTitleVariants}
+                className="text-4xl md:text-5xl lg:text-7xl font-bold tracking-tight"
+              >
                 <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary via-primary/80 to-primary/60">
                   探索AI新世界
                 </span>
-              </h1>
-              <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-                发现、分享和收藏优质AI工具与资源。
-              </p>
-            </motion.div>
-
-            {/* 搜索和分类区域 */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.4 }}
-              className="max-w-3xl mx-auto space-y-3"
-            >
-              {/* 搜索框 */}
-              <SearchBox
-                value={searchQuery}
-                onChange={setSearchQuery}
-              />
-
-              {/* 分类过滤器 */}
-              <CategoryFilter categories={categories} />
+              </motion.h1>
+              <motion.div
+                variants={heroDescriptionVariants}
+              >
+                <Typewriter 
+                  text="发现、分享和收藏优质AI工具与资源，让人工智能为你的工作和生活带来无限可能"
+                  speed={70}
+                  delay={1000}
+                />
+              </motion.div>
             </motion.div>
           </div>
-        </div>
+        </motion.div>
 
-        {/* 网站列表 */}
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={selectedCategory || 'all'}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.2 }}
-            className="mt-2"
-          >
-            <WebsiteGrid websites={filteredWebsites} categories={categories} />
-          </motion.div>
-        </AnimatePresence>
+        {/* Website Grid */}
+        <motion.div
+          variants={gridContainerVariants}
+          initial="hidden"
+          animate="visible"
+          className="container mx-auto px-4 pb-24"
+        >
+          <WebsiteGrid 
+            websites={filteredWebsites} 
+            categories={categories} 
+            onVisit={handleVisit}
+          />
+        </motion.div>
       </motion.div>
     </div>
   );

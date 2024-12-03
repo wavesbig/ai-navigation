@@ -2,20 +2,14 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Eye, ThumbsUp, ThumbsDown, Trash2, ExternalLink } from 'lucide-react';
+import { Eye, Heart, ThumbsUp, ThumbsDown, Trash2, ExternalLink } from 'lucide-react';
 import { updateWebsiteStatus, deleteWebsite } from '@/lib/db';
 import { useToast } from '@/hooks/use-toast';
 import { useAtom } from 'jotai';
 import { websitesAtom } from '@/lib/atoms';
+import { WebsiteThumbnail } from '@/components/website/website-thumbnail';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -26,6 +20,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import { cn } from '@/lib/utils';
 import type { Website, Category } from '@/lib/types';
 
 interface WebsiteListProps {
@@ -45,19 +40,16 @@ export function WebsiteList({ websites: initialWebsites, categories, showActions
   }, [initialWebsites]);
 
   const handleStatusUpdate = (id: number, status: Website['status']) => {
-    // 更新全局状态
     setAllWebsites(prevWebsites =>
       prevWebsites.map(website =>
         website.id === id ? { ...website, status } : website
       )
     );
 
-    // 更新本地状态，触发动画
     setWebsites(prevWebsites =>
       prevWebsites.filter(website => website.id !== id)
     );
 
-    // 更新数据库
     updateWebsiteStatus(id, status);
 
     toast({
@@ -67,17 +59,14 @@ export function WebsiteList({ websites: initialWebsites, categories, showActions
   };
 
   const handleDelete = (id: number) => {
-    // 更新全局状态
     setAllWebsites(prevWebsites =>
       prevWebsites.filter(website => website.id !== id)
     );
 
-    // 更新本地状态，触发动画
     setWebsites(prevWebsites =>
       prevWebsites.filter(website => website.id !== id)
     );
     
-    // 更新数据库
     deleteWebsite(id);
     setDeleteId(null);
     
@@ -91,6 +80,32 @@ export function WebsiteList({ websites: initialWebsites, categories, showActions
     window.open(url, '_blank');
   };
 
+  const getStatusColor = (status: Website['status']) => {
+    switch (status) {
+      case 'pending':
+        return 'bg-yellow-500/10 text-yellow-600 dark:text-yellow-400';
+      case 'approved':
+        return 'bg-green-500/10 text-green-600 dark:text-green-400';
+      case 'rejected':
+        return 'bg-red-500/10 text-red-600 dark:text-red-400';
+      default:
+        return '';
+    }
+  };
+
+  const getStatusText = (status: Website['status']) => {
+    switch (status) {
+      case 'pending':
+        return '待审核';
+      case 'approved':
+        return '已通过';
+      case 'rejected':
+        return '已拒绝';
+      default:
+        return '';
+    }
+  };
+
   if (websites.length === 0) {
     return (
       <div className="text-center py-12">
@@ -101,98 +116,94 @@ export function WebsiteList({ websites: initialWebsites, categories, showActions
 
   return (
     <>
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <div className="space-y-3">
         <AnimatePresence mode="popLayout">
           {websites.map((website) => (
             <motion.div
               key={website.id}
               layout
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.8, transition: { duration: 0.2 } }}
-              transition={{
-                opacity: { duration: 0.2 },
-                layout: { duration: 0.3 }
-              }}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.2 }}
+              className="group bg-card hover:bg-muted/50 rounded-lg border p-4 transition-colors"
             >
-              <Card>
-                <CardHeader className="space-y-1">
-                  <div className="flex items-start justify-between">
-                    <CardTitle className="text-xl line-clamp-1">{website.title}</CardTitle>
-                    <Badge 
-                      variant={
-                        website.status === 'approved' ? 'default' :
-                        website.status === 'rejected' ? 'destructive' : 'secondary'
-                      }
-                    >
-                      {
-                        website.status === 'approved' ? '已通过' :
-                        website.status === 'rejected' ? '已拒绝' : '待审核'
-                      }
-                    </Badge>
-                  </div>
-                  <CardDescription className="line-clamp-2">
-                    {website.description}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <Badge variant="outline">
+              <div className="flex items-center gap-4">
+                {/* Thumbnail */}
+                <WebsiteThumbnail
+                  url={website.url}
+                  thumbnail={website.thumbnail}
+                  title={website.title}
+                />
+
+                {/* Content */}
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <h3 className="font-medium truncate">{website.title}</h3>
+                    <Badge variant="outline" className="shrink-0">
                       {categories.find(c => c.id === website.category_id)?.name || '未分类'}
                     </Badge>
-                    <span className="text-sm text-muted-foreground">
-                      访问量: {website.visits}
-                    </span>
+                    <Badge variant="secondary" className={cn("shrink-0", getStatusColor(website.status))}>
+                      {getStatusText(website.status)}
+                    </Badge>
                   </div>
-
-                  {showActions && (
-                    <div className="flex flex-wrap gap-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="flex-1"
-                        onClick={() => handleVisit(website.url)}
-                      >
-                        <ExternalLink className="h-4 w-4 mr-1" />
-                        访问
-                      </Button>
-                      
-                      {website.status !== 'approved' && (
-                        <Button
-                          variant="default"
-                          size="sm"
-                          className="flex-1"
-                          onClick={() => handleStatusUpdate(website.id, 'approved')}
-                        >
-                          <ThumbsUp className="h-4 w-4 mr-1" />
-                          通过
-                        </Button>
-                      )}
-                      
-                      {website.status !== 'rejected' && (
-                        <Button
-                          variant="destructive"
-                          size="sm"
-                          className="flex-1"
-                          onClick={() => handleStatusUpdate(website.id, 'rejected')}
-                        >
-                          <ThumbsDown className="h-4 w-4 mr-1" />
-                          拒绝
-                        </Button>
-                      )}
-                      <Button
-                        variant="destructive"
-                        size="sm"
-                        className="flex-1"
-                        onClick={() => setDeleteId(website.id)}
-                      >
-                        <Trash2 className="h-4 w-4 mr-1" />
-                        删除
-                      </Button>
+                  <div className="mt-1 flex items-center gap-3 text-sm text-muted-foreground">
+                    <div className="flex items-center gap-1">
+                      <Eye className="w-4 h-4" />
+                      <span>{website.visits}</span>
                     </div>
-                  )}
-                </CardContent>
-              </Card>
+                    <div className="flex items-center gap-1">
+                      <Heart className="w-4 h-4" />
+                      <span>{website.likes}</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Actions */}
+                {showActions && (
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleVisit(website.url)}
+                      className="text-muted-foreground hover:text-foreground"
+                    >
+                      <ExternalLink className="h-4 w-4" />
+                    </Button>
+                    
+                    {website.status !== 'approved' && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleStatusUpdate(website.id, 'approved')}
+                        className="text-green-600 hover:text-green-700 hover:bg-green-100/50"
+                      >
+                        <ThumbsUp className="h-4 w-4" />
+                      </Button>
+                    )}
+                    
+                    {website.status !== 'rejected' && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleStatusUpdate(website.id, 'rejected')}
+                        className="text-red-600 hover:text-red-700 hover:bg-red-100/50"
+                      >
+                        <ThumbsDown className="h-4 w-4" />
+                      </Button>
+                    )}
+
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setDeleteId(website.id)}
+                      className="text-red-600 hover:text-red-700 hover:bg-red-100/50"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                )}
+              </div>
             </motion.div>
           ))}
         </AnimatePresence>

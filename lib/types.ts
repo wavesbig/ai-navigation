@@ -9,6 +9,7 @@ export interface Website {
   thumbnail: string;
   status: 'pending' | 'approved' | 'rejected';
   visits: number;
+  likes: number;
   created_at: string;
 }
 

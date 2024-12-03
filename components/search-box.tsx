@@ -49,16 +49,6 @@ const searchEngines: SearchEngine[] = [
     ),
     searchUrl: 'https://www.google.com/search?q=',
   },
-  {
-    id: 'bing',
-    name: 'Bing',
-    icon: (
-      <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
-        <path d="M5.71 2L9 2.857l-.006 15.286 5.612 3.143-7.327-2.286.43-13.714L5.71 2zm6.572 7.286L9.714 8l-.714-.857V5.57l3.429 1.715-0.147 2z"/>
-      </svg>
-    ),
-    searchUrl: 'https://www.bing.com/search?q=',
-  },
 ];
 
 interface SearchBoxProps {
@@ -89,15 +79,18 @@ export function SearchBox({ value, onChange, className }: SearchBoxProps) {
   };
 
   return (
-    <div className={`relative group ${className}`}>
-      <div className="absolute inset-0 bg-gradient-to-r from-primary/20 via-primary/10 to-primary/20 rounded-lg blur-xl opacity-50 group-hover:opacity-75 transition-all duration-500" />
+    <motion.div 
+      className={`relative group ${className}`}
+      layout
+    >
+      <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-primary/5 to-primary/10 rounded-lg blur-xl opacity-50 group-hover:opacity-75 transition-all duration-500" />
       <div className="relative flex items-center gap-1">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
               variant="ghost"
               size="sm"
-              className="h-12 gap-2 px-3 hover:bg-transparent data-[state=open]:bg-muted/50"
+              className="h-10 gap-2 px-3 hover:bg-transparent data-[state=open]:bg-muted/50"
             >
               {selectedEngine.icon}
               <span className="hidden sm:inline font-medium">{selectedEngine.name}</span>
@@ -126,19 +119,19 @@ export function SearchBox({ value, onChange, className }: SearchBoxProps) {
             value={value}
             onChange={(e) => onChange(e.target.value)}
             onKeyPress={handleKeyPress}
-            className="w-full h-12 pl-12 pr-4 bg-background/60 backdrop-blur-xl border-primary/20 hover:border-primary/40 focus:border-primary transition-all duration-300 text-lg rounded-lg"
+            className="w-full h-10 pl-10 pr-4 bg-background/60 backdrop-blur-xl border-primary/20 hover:border-primary/40 focus:border-primary transition-all duration-300"
           />
         </div>
 
         <Button
           variant="default"
           size="sm"
-          className="h-12 px-6"
+          className="h-10 px-4"
           onClick={handleSearch}
         >
           搜索
         </Button>
       </div>
-    </div>
+    </motion.div>
   );
 }

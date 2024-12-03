@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from 'react';
 import { useAtom } from 'jotai';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
@@ -8,7 +9,6 @@ import { Plus } from 'lucide-react';
 import { isAdminModeAtom, footerSettingsAtom } from '@/lib/atoms';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
-import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 
 export default function Footer() {
@@ -58,7 +58,7 @@ export default function Footer() {
     <motion.footer 
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="mt-auto border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
+      className="w-full border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
     >
       <div className="container mx-auto px-4 py-4">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
@@ -66,12 +66,14 @@ export default function Footer() {
             {settings.links.length > 0 ? (
               settings.links.map((link, index) => (
                 <div key={index} className="flex items-center gap-2">
-                  <Link 
+                  <a 
                     href={link.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                   >
                     {link.name}
-                  </Link>
+                  </a>
                   {isAdmin && (
                     <Button
                       variant="ghost"

@@ -2,32 +2,33 @@
 
 import { useEffect, useState } from 'react';
 import { useAtom } from 'jotai';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { websitesAtom, categoriesAtom, isAdminModeAtom } from '@/lib/atoms';
 import { getWebsites, getCategories } from '@/lib/db';
 import { WebsiteList } from '@/components/admin/website-list';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import type { Website } from '@/lib/types';
 
 export default function AdminPage() {
   const [websites, setWebsites] = useAtom(websitesAtom);
   const [categories, setCategories] = useAtom(categoriesAtom);
   const [isAdmin] = useAtom(isAdminModeAtom);
-  const [activeTab, setActiveTab] = useState<Website['status']>('pending');
+  const [activeStatus, setActiveStatus] = useState<Website['status']>('pending');
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const router = useRouter();
 
   useEffect(() => {
-    // 如果不是管理员模式，重定向到首页
     if (!isAdmin) {
       router.push('/');
       return;
     }
 
-    const loadData = async () => {
+    const loadData = () => {
       const websiteData = getWebsites();
       const categoryData = getCategories();
-      
       setWebsites(websiteData);
       setCategories(categoryData);
     };
@@ -37,59 +38,96 @@ export default function AdminPage() {
 
   if (!isAdmin) return null;
 
-  const filteredWebsites = {
-    pending: websites.filter(w => w.status === 'pending'),
-    approved: websites.filter(w => w.status === 'approved'),
-    rejected: websites.filter(w => w.status === 'rejected'),
+  const filteredWebsites = websites.filter(website => {
+    const matchesStatus = website.status === activeStatus;
+    const matchesCategory = selectedCategory === 'all' || website.category_id === parseInt(selectedCategory);
+    return matchesStatus && matchesCategory;
+  });
+
+  const statusCounts = {
+    pending: websites.filter(w => w.status === 'pending').length,
+    approved: websites.filter(w => w.status === 'approved').length,
+    rejected: websites.filter(w => w.status === 'rejected').length,
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.5 }}
-      className="space-y-6"
-    >
+    <div className="space-y-6">
       <div>
         <h1 className="text-4xl font-bold mb-2">网站管理</h1>
         <p className="text-muted-foreground">管理所有提交的网站</p>
       </div>
 
-      <Tabs 
-        value={activeTab} 
-        onValueChange={(value) => setActiveTab(value as Website['status'])}
-        className="space-y-6"
-      >
-        <TabsList className="w-full justify-start">
-          <TabsTrigger value="pending" className="flex-1 md:flex-none">
-            待审核 ({filteredWebsites.pending.length})
-          </TabsTrigger>
-          <TabsTrigger value="approved" className="flex-1 md:flex-none">
-            已通过 ({filteredWebsites.approved.length})
-          </TabsTrigger>
-          <TabsTrigger value="rejected" className="flex-1 md:flex-none">
-            已拒绝 ({filteredWebsites.rejected.length})
-          </TabsTrigger>
-        </TabsList>
-
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={activeTab}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.2 }}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex flex-wrap gap-2">
+          <Button
+            variant="outline"
+            onClick={() => setActiveStatus('pending')}
+            className={`flex items-center gap-2 hover:bg-muted ${
+              activeStatus === 'pending' ? 'bg-muted border-primary/50' : ''
+            }`}
           >
-            <TabsContent value={activeTab} forceMount>
-              <WebsiteList
-                websites={filteredWebsites[activeTab]}
-                categories={categories}
-                showActions={true}
-              />
-            </TabsContent>
-          </motion.div>
-        </AnimatePresence>
-      </Tabs>
-    </motion.div>
+            <span className="text-foreground">待审核</span>
+            <Badge variant="secondary" className="bg-background/80">
+              {statusCounts.pending}
+            </Badge>
+          </Button>
+          <Button
+            variant="outline"
+            onClick={() => setActiveStatus('approved')}
+            className={`flex items-center gap-2 hover:bg-muted ${
+              activeStatus === 'approved' ? 'bg-muted border-primary/50' : ''
+            }`}
+          >
+            <span className="text-foreground">已通过</span>
+            <Badge variant="secondary" className="bg-background/80">
+              {statusCounts.approved}
+            </Badge>
+          </Button>
+          <Button
+            variant="outline"
+            onClick={() => setActiveStatus('rejected')}
+            className={`flex items-center gap-2 hover:bg-muted ${
+              activeStatus === 'rejected' ? 'bg-muted border-primary/50' : ''
+            }`}
+          >
+            <span className="text-foreground">已拒绝</span>
+            <Badge variant="secondary" className="bg-background/80">
+              {statusCounts.rejected}
+            </Badge>
+          </Button>
+        </div>
+
+        <Select 
+          value={selectedCategory} 
+          onValueChange={setSelectedCategory}
+        >
+          <SelectTrigger className="w-[200px]">
+            <SelectValue placeholder="选择分类" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">全部分类</SelectItem>
+            {categories.map(category => (
+              <SelectItem key={category.id} value={category.id.toString()}>
+                {category.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
+      <motion.div
+        key={activeStatus}
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -10 }}
+        transition={{ duration: 0.2 }}
+      >
+        <WebsiteList
+          websites={filteredWebsites}
+          categories={categories}
+          showActions={true}
+        />
+      </motion.div>
+    </div>
   );
 }

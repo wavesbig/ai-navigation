@@ -19,7 +19,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="zh-CN" suppressHydrationWarning>
-      <body suppressHydrationWarning className="font-sans min-h-screen flex flex-col">
+      <body suppressHydrationWarning className="min-h-screen flex flex-col">
         <StoreProvider>
           <ThemeProvider
             attribute="class"
@@ -29,7 +29,7 @@ export default function RootLayout({
           >
             <ThemeWrapper>
               <Header />
-              <main className="container mx-auto px-4 py-8 flex-grow">
+              <main className="flex-1">
                 {children}
               </main>
               <Footer />
