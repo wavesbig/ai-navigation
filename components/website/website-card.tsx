@@ -12,6 +12,7 @@ import { cardHoverVariants } from '@/lib/animations';
 import { toggleLike } from '@/lib/db';
 import type { Website, Category } from '@/lib/types';
 import { useState } from 'react';
+import { WebsiteThumbnail } from './website-thumbnail';
 
 interface WebsiteCardProps {
   website: Website;
@@ -66,9 +67,7 @@ export function WebsiteCard({ website, category, isAdmin, onVisit, onStatusUpdat
         {/* Website Icon and Status */}
         <div className="relative p-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center transform group-hover:scale-110 transition-transform duration-300">
-              <Globe className="w-5 h-5 text-primary" />
-            </div>
+            <WebsiteThumbnail url={website.url} thumbnail={website.thumbnail} title={website.title} />
             <div className="space-y-1">
               <h3 className="font-medium line-clamp-1 group-hover:text-primary transition-colors">
                 {website.title}

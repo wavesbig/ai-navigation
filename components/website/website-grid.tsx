@@ -15,9 +15,10 @@ import type { Website, Category } from '@/lib/types';
 interface WebsiteGridProps {
   websites: Website[];
   categories: Category[];
+  onVisit: (website: Website) => void;
 }
 
-export default function WebsiteGrid({ websites, categories }: WebsiteGridProps) {
+export default function WebsiteGrid({ websites, categories, onVisit }: WebsiteGridProps) {
   const isAdmin = useAtomValue(isAdminModeAtom);
   const { toast } = useToast();
   const [isCompact, setIsCompact] = useState(false);

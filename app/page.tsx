@@ -143,8 +143,8 @@ export default function Home() {
                 variants={heroDescriptionVariants}
               >
                 <Typewriter 
-                  text="发现、分享和收藏优质AI工具与资源，让人工智能为你的工作和生活带来无限可能"
-                  speed={70}
+                  text="发现、分享和收藏优质AI工具与资源，让你的人工智能生活更美好"
+                  speed={10}
                   delay={1000}
                 />
               </motion.div>
