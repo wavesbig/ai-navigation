@@ -1,5 +1,11 @@
 # AI 导航 | AI Navigation
 
+## 发开约束
+
+### 提交约束
+
+![引用仓库的这个图片](static/image.png)
+
 <div align="center">
 
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
@@ -34,22 +40,26 @@ AI 导航是一个现代化的人工智能网站导航系统，致力于帮助�
 ### 安装步骤
 
 1. 克隆项目:
+
 ```bash
 git clone https://github.com/yourusername/ai-navigation.git
 cd ai-navigation
 ```
 
 2. 安装依赖:
+
 ```bash
 npm install
 ```
 
 3. 配置环境变量:
+
 ```bash
 cp .env.example .env.local
 ```
 
 4. 启动开发服务器:
+
 ```bash
 npm run dev
 ```
@@ -67,11 +77,13 @@ npm run dev
 #### Docker 部署
 
 1. 构建镜像:
+
 ```bash
 docker build -t ai-navigation .
 ```
 
 2. 运行容器:
+
 ```bash
 docker run -d \
   -p 3000:3000 \
@@ -85,6 +97,7 @@ docker run -d \
 ### 网站管理
 
 - **网站提交**
+
   - 支持手动填写和自动抓取
   - 分类管理和标签系统
   - 审核流程和状态追踪
@@ -104,15 +117,18 @@ docker run -d \
 #### 安装油猴脚本
 
 1. 安装浏览器扩展
+
    - Chrome: [Tampermonkey](https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo)
    - Firefox: [Tampermonkey](https://addons.mozilla.org/en-US/firefox/addon/tampermonkey/)
    - Edge: [Tampermonkey](https://microsoftedge.microsoft.com/addons/detail/tampermonkey/iikmkjmpaadaobahmlepeloendndfphd)
 
 2. 安装收藏脚本
+
    - 点击 [安装脚本](https://ai-nav.vercel.app/scripts/ai-nav-collector.user.js)
    - 或手动复制 `scripts/ai-nav-collector.user.js` 内容创建新脚本
 
 3. 使用方法
+
    - 浮动按钮：页面右下角的收藏按钮
    - 快捷键：
      - `Alt + S`: 收藏网站
@@ -128,6 +144,7 @@ docker run -d \
 ### 系统设置
 
 - **主题定制**
+
   - 自定义颜色方案
   - 卡片样式选择
   - 深色模式支持
@@ -142,6 +159,7 @@ docker run -d \
 ### 访问方式
 
 1. 进入管理模式:
+
    - 在网站标题处快速点击 5 次
    - 输入默认密码: `123456`
 
@@ -154,6 +172,7 @@ docker run -d \
 ### 功能说明
 
 - **内容管理**
+
   - 网站审核流程
   - 分类管理
   - 资讯管理
@@ -168,20 +187,24 @@ docker run -d \
 
 ## 🛠️ 技术栈
 
-- **前端框架**: 
+- **前端框架**:
+
   - Next.js 13 (App Router)
   - React 18
   - TypeScript
 
-- **状态管理**: 
+- **状态管理**:
+
   - Jotai
 
-- **UI 框架**: 
+- **UI 框架**:
+
   - Tailwind CSS
   - shadcn/ui
   - Framer Motion
 
-- **数据存储**: 
+- **数据存储**:
+
   - SQLite
   - 阿里云 OSS
 
@@ -207,11 +230,13 @@ ai-navigation/
 ### 开发规范
 
 1. 代码风格
+
    - 使用 TypeScript
    - 遵循 ESLint 配置
    - 使用 Prettier 格式化
 
 2. 组件开发
+
    - 使用函数组件
    - 遵循 React Hooks 规范
    - 组件文档化
@@ -252,6 +277,6 @@ ai-navigation/
 
 <div align="center">
 
-**AI 导航** © 2024 Made with ❤️ 
+**AI 导航** © 2024 Made with ❤️
 
 </div>
