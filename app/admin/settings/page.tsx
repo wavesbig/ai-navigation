@@ -1,25 +1,46 @@
 "use client";
 
-import { useEffect } from 'react';
-import { useAtom } from 'jotai';
-import { motion } from 'framer-motion';
-import { useRouter } from 'next/navigation';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { isAdminModeAtom } from '@/lib/atoms';
-import { GeneralSettings } from '@/components/admin/settings/general-settings';
-import { ThemeSettings } from '@/components/admin/settings/theme-settings';
-import { OSSSettings } from '@/components/admin/settings/oss-settings';
-import { FooterSettings } from '@/components/admin/settings/footer-settings';
-import { BackupSettings } from '@/components/admin/settings/backup-settings';
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useAtom } from "jotai";
+import { isAdminModeAtom } from "@/lib/atoms";
+import { SettingsManager } from "@/components/admin/settings-manager";
+import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      duration: 0.3,
+      ease: "easeOut",
+      when: "beforeChildren",
+      staggerChildren: 0.1,
+    },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.3,
+      ease: "easeOut",
+    },
+  },
+};
 
 export default function SettingsPage() {
   const [isAdmin] = useAtom(isAdminModeAtom);
   const router = useRouter();
 
   useEffect(() => {
-    // 如果不是管理员模式，重定向到首页
     if (!isAdmin) {
-      router.push('/');
+      router.push("/");
     }
   }, [isAdmin, router]);
 
@@ -27,45 +48,45 @@ export default function SettingsPage() {
 
   return (
     <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.5 }}
-      className="space-y-6"
+      className="container max-w-6xl mx-auto p-6"
+      initial="hidden"
+      animate="visible"
+      variants={containerVariants}
     >
-      <div>
-        <h1 className="text-4xl font-bold mb-2">网站设置</h1>
-        <p className="text-muted-foreground">管理网站的全局设置和偏好</p>
-      </div>
+      <motion.div variants={itemVariants} className="mb-6">
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <h1 className="text-3xl font-semibold mb-1">后台管理</h1>
+            <p className="text-sm text-muted-foreground">管理网站内容和系统设置</p>
+          </div>
+        </div>
 
-      <Tabs defaultValue="general" className="space-y-6">
-        <TabsList className="w-full justify-start">
-          <TabsTrigger value="general">基本设置</TabsTrigger>
-          <TabsTrigger value="theme">主题风格</TabsTrigger>
-          <TabsTrigger value="footer">页脚设置</TabsTrigger>
-          <TabsTrigger value="oss">OSS 配置</TabsTrigger>
-          <TabsTrigger value="backup">数据备份</TabsTrigger>
-        </TabsList>
+        <div className="flex items-center gap-2 border-b">
+          <Link href="/admin">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="relative h-9 rounded-none border-b-2 border-transparent px-4 pb-3 pt-2 font-medium text-muted-foreground hover:text-foreground"
+            >
+              网站管理
+            </Button>
+          </Link>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="relative h-9 rounded-none border-b-2 border-transparent px-4 pb-3 pt-2 font-medium text-muted-foreground hover:text-foreground data-[active=true]:border-primary data-[active=true]:text-foreground"
+            data-active="true"
+          >
+            网站设置
+          </Button>
+        </div>
+      </motion.div>
 
-        <TabsContent value="general">
-          <GeneralSettings />
-        </TabsContent>
-
-        <TabsContent value="theme">
-          <ThemeSettings />
-        </TabsContent>
-
-        <TabsContent value="footer">
-          <FooterSettings />
-        </TabsContent>
-
-        <TabsContent value="oss">
-          <OSSSettings />
-        </TabsContent>
-
-        <TabsContent value="backup">
-          <BackupSettings />
-        </TabsContent>
-      </Tabs>
+      <motion.div variants={itemVariants}>
+        <div className="bg-card rounded-lg border ">
+          <SettingsManager />
+        </div>
+      </motion.div>
     </motion.div>
   );
 }

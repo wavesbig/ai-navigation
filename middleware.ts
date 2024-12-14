@@ -13,7 +13,7 @@ export async function middleware(request: NextRequest) {
     await applyMiddleware(loggerMiddleware, request);
 
     // Apply auth middleware for specific API routes
-    await applyMiddleware(authMiddleware, request);
+    // await applyMiddleware(authMiddleware, request);
 
     // // Apply error middleware
     // await applyMiddleware(errorMiddleware, request);
@@ -23,7 +23,9 @@ export async function middleware(request: NextRequest) {
     if (error instanceof NextResponse) {
       return error;
     }
-    throw error;
+    return NextResponse.json(AjaxResponse.fail("Internal server error:" + error), {
+      status: 500,
+    });
   }
 }
 

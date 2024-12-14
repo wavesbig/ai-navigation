@@ -11,7 +11,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from './ui/dropdown-menu';
-import type { Category } from '@/lib/db';
+import type { Category } from '@/lib/types';
 import { useRef, useState, useEffect } from 'react';
 
 interface CategoryFilterProps {
@@ -52,7 +52,7 @@ export default function CategoryFilter({ categories }: CategoryFilterProps) {
   }, []);
 
   const selectedCategoryName = selectedCategory
-    ? categories.find(c => c.id === selectedCategory)?.name
+    ? categories?.find(c => c.id === selectedCategory)?.name || '未知分类'
     : '全部';
 
   const handleCategorySelect = (categoryId: number | null) => {
@@ -70,10 +70,11 @@ export default function CategoryFilter({ categories }: CategoryFilterProps) {
   const centerCategory = (index: number) => {
     const visibleCount = 5;
     const halfVisible = Math.floor(visibleCount / 2);
+    const maxLength = categories?.length || 0;
     let start = Math.max(0, index - halfVisible);
-    let end = Math.min(categories.length, start + visibleCount);
+    let end = Math.min(maxLength, start + visibleCount);
     
-    if (end === categories.length) {
+    if (end === maxLength) {
       start = Math.max(0, end - visibleCount);
     }
     
@@ -82,6 +83,7 @@ export default function CategoryFilter({ categories }: CategoryFilterProps) {
 
   const handleScroll = (direction: 'left' | 'right') => {
     const step = 1;
+    const maxLength = categories?.length || 0;
     if (direction === 'left') {
       setVisibleRange(prev => ({
         start: Math.max(0, prev.start - step),
@@ -89,19 +91,19 @@ export default function CategoryFilter({ categories }: CategoryFilterProps) {
       }));
     } else {
       setVisibleRange(prev => ({
-        start: Math.min(categories.length - 5, prev.start + step),
-        end: Math.min(categories.length, prev.end + step)
+        start: Math.min(maxLength - 5, prev.start + step),
+        end: Math.min(maxLength, prev.end + step)
       }));
     }
   };
 
   const visibleCategories = [
     { id: null, name: '全部' },
-    ...categories.slice(visibleRange.start, visibleRange.end)
+    ...(categories?.slice(visibleRange.start, visibleRange.end) || [])
   ];
 
   const canScrollLeft = visibleRange.start > 0;
-  const canScrollRight = visibleRange.end < categories.length;
+  const canScrollRight = visibleRange.end < (categories?.length || 0);
 
   if (!mounted) {
     return null;

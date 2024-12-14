@@ -1,10 +1,9 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useAtomValue } from 'jotai';
-import { isAdminModeAtom } from '@/lib/atoms';
-import { updateWebsiteStatus, incrementVisits } from '@/lib/db';
+import { useAtomValue, useAtom } from 'jotai';
+import { isAdminModeAtom, isCompactModeAtom } from '@/lib/atoms';
 import { useToast } from '@/hooks/use-toast';
 import { WebsiteCard } from './website-card';
 import { CompactCard } from './compact-card';
@@ -21,19 +20,28 @@ interface WebsiteGridProps {
 export default function WebsiteGrid({ websites, categories, onVisit }: WebsiteGridProps) {
   const isAdmin = useAtomValue(isAdminModeAtom);
   const { toast } = useToast();
-  const [isCompact, setIsCompact] = useState(false);
+  const [isCompact, setIsCompact] = useAtom(isCompactModeAtom);
 
-  const handleVisit = (website: Website) => {
-    incrementVisits(website.id);
+  const handleVisit = async (website: Website) => {
+    await fetch(`/api/websites/${website.id}/visit`, { method: 'POST' });
     window.open(website.url, '_blank');
   };
 
-  const handleStatusUpdate = (id: number, status: Website['status']) => {
-    updateWebsiteStatus(id, status);
-    toast({
-      title: '状态已更新',
-      description: status === 'approved' ? '网站已通过审核' : '网站已被拒绝',
+  const handleStatusUpdate = async (id: number, status: Website['status']) => {
+    const response = await fetch(`/api/websites/${id}/status`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ status }),
     });
+
+    if (response.ok) {
+      toast({
+        title: '状态已更新',
+        description: status === 'approved' ? '网站已通过审核' : '网站已被拒绝',
+      });
+    }
   };
 
   if (!websites || websites.length === 0) {

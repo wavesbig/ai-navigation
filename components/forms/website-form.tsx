@@ -7,7 +7,6 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useAtom } from 'jotai';
 import { categoriesAtom, isAdminModeAtom } from '@/lib/atoms';
-import { addWebsite, getCategories } from '@/lib/db';
 import { fetchMetadata } from '@/lib/metadata';
 import { websiteFormSchema } from '@/lib/validations';
 import { FormField } from './form-field';
@@ -15,26 +14,39 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import type { FormInputs } from '@/lib/types';
+import { useSettings } from '@/hooks/use-settings';
 
 export function WebsiteForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isFetching, setIsFetching] = useState(false);
   const [categories, setCategories] = useAtom(categoriesAtom);
   const [isAdmin] = useAtom(isAdminModeAtom);
+  const { settings } = useSettings();
   const router = useRouter();
   const { toast } = useToast();
 
   useEffect(() => {
-    // 确保分类数据已加载
-    const loadCategories = () => {
-      const categoryData = getCategories();
-      setCategories(categoryData);
+    // Ensure categories are loaded
+    const loadCategories = async () => {
+      try {
+        const categoryData = await fetch('/api/categories').then(res => {
+          if (!res.ok) throw new Error('Failed to load categories');
+          return res.json();
+        });
+        setCategories(categoryData);
+      } catch (error) {
+        toast({
+          title: '加载分类失败',
+          description: '请刷新页面重试',
+          variant: 'destructive',
+        });
+      }
     };
     
     if (categories.length === 0) {
       loadCategories();
     }
-  }, [categories.length, setCategories]);
+  }, [categories.length, setCategories, toast]);
 
   const form = useForm<FormInputs>({
     resolver: zodResolver(websiteFormSchema),
@@ -88,24 +100,34 @@ export function WebsiteForm() {
 
     setIsSubmitting(true);
     try {
-      await addWebsite({
-        ...values,
-        category_id: parseInt(values.category_id),
-        // 如果是管理员提交，直接设置为已通过状态
-        status: isAdmin ? 'approved' : 'pending',
+      // Check if submissions are allowed based on settings
+      if (!isAdmin && settings?.allowSubmissions === false) {
+        throw new Error('网站提交功能暂时关闭');
+      }
+
+      const response = await fetch('/api/websites', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(values),
       });
+
+      if (!response.ok) {
+        throw new Error(await response.text() || 'Failed to submit website');
+      }
 
       toast({
         title: '提交成功！',
         description: isAdmin ? '网站已添加到已通过列表。' : '您的网站已提交审核。',
       });
 
-      // 管理员提交后跳转到管理页面，普通用户跳转到首页
       router.push(isAdmin ? '/admin' : '/');
+      router.refresh();
     } catch (error) {
       toast({
         title: '错误',
-        description: '提交失败，请重试。',
+        description: error instanceof Error ? error.message : '提交失败，请重试。',
         variant: 'destructive',
       });
     } finally {

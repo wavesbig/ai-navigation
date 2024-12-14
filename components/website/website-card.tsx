@@ -9,7 +9,6 @@ import { ExternalLink, ThumbsUp, ThumbsDown, Globe, ArrowUpRight, Heart } from '
 import { themeSettingsAtom } from '@/lib/atoms';
 import { cn } from '@/lib/utils';
 import { cardHoverVariants } from '@/lib/animations';
-import { toggleLike } from '@/lib/db';
 import type { Website, Category } from '@/lib/types';
 import { useState } from 'react';
 import { WebsiteThumbnail } from './website-thumbnail';
@@ -31,18 +30,24 @@ export function WebsiteCard({ website, category, isAdmin, onVisit, onStatusUpdat
     pending: 'bg-yellow-500/10 text-yellow-600 dark:text-yellow-400',
     approved: 'bg-green-500/10 text-green-600 dark:text-green-400',
     rejected: 'bg-red-500/10 text-red-600 dark:text-red-400',
+    all: '',
   };
 
   const statusText = {
     pending: '待审核',
     approved: '已通过',
     rejected: '已拒绝',
+    all: '',
   };
 
-  const handleLike = () => {
-    const newLikes = toggleLike(website.id);
-    setLikes(newLikes);
-    setIsLiked(!isLiked);
+  const handleLike = async () => {
+    const method = isLiked ? 'DELETE' : 'POST';
+    const response = await fetch(`/api/websites/${website.id}/like`, { method });
+    if (response.ok) {
+      const { likes: newLikes } = await response.json();
+      setLikes(newLikes);
+      setIsLiked(!isLiked);
+    }
   };
 
   return (

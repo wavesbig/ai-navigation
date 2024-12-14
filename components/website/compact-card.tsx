@@ -7,9 +7,9 @@ import { Badge } from '@/components/ui/badge';
 import { Heart, Globe, ArrowUpRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { cardHoverVariants } from '@/lib/animations';
-import { toggleLike } from '@/lib/db';
 import type { Website } from '@/lib/types';
 import { useState } from 'react';
+import { WebsiteThumbnail } from './website-thumbnail';
 
 interface CompactCardProps {
   website: Website;
@@ -20,10 +20,14 @@ export function CompactCard({ website, onVisit }: CompactCardProps) {
   const [likes, setLikes] = useState(website.likes);
   const [isLiked, setIsLiked] = useState(false);
 
-  const handleLike = () => {
-    const newLikes = toggleLike(website.id);
-    setLikes(newLikes);
-    setIsLiked(!isLiked);
+  const handleLike = async () => {
+    const method = isLiked ? 'DELETE' : 'POST';
+    const response = await fetch(`/api/websites/${website.id}/like`, { method });
+    if (response.ok) {
+      const { likes: newLikes } = await response.json();
+      setLikes(newLikes);
+      setIsLiked(!isLiked);
+    }
   };
 
   return (
@@ -44,9 +48,7 @@ export function CompactCard({ website, onVisit }: CompactCardProps) {
         <div className="relative p-3 flex flex-col gap-2 h-full">
           {/* Icon and Title */}
           <div className="flex items-center gap-2 min-w-0">
-            <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center transform group-hover:scale-110 transition-transform duration-300 shrink-0">
-              <Globe className="w-4 h-4 text-primary" />
-            </div>
+            <WebsiteThumbnail url={website.url} thumbnail={website.thumbnail} title={website.title} />
             <div className="min-w-0 flex-1">
               <h3 className="font-medium text-sm line-clamp-1 group-hover:text-primary transition-colors">
                 {website.title}

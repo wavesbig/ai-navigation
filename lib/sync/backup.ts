@@ -1,69 +1,32 @@
-import { nanoid } from 'nanoid';
-import { StorageManager } from './storage';
-import { exportData, importData } from '../db';
-import type { BackupMetadata, SyncConfig } from './types';
-import type { OSSSettings } from '../atoms';
+import { nanoid } from "nanoid";
+import type { BackupMetadata, SyncConfig } from "./types";
+import { OSSInterface } from "./oss";
+import { DatabaseInterface } from "../db/sqlite";
 
 export class BackupManager {
-  private storage: StorageManager;
+  private db: DatabaseInterface;
   private autoBackupTimer: NodeJS.Timeout | null = null;
+  private oss: OSSInterface;
+  private syncConfig: SyncConfig;
 
   constructor(
-    private ossConfig: OSSSettings,
-    private syncConfig: SyncConfig,
-    private onStatusChange: (status: string) => void
+    syncConfig: SyncConfig,
+    oss: OSSInterface,
+    db: DatabaseInterface
   ) {
-    this.storage = new StorageManager(ossConfig);
+    this.db = db;
+    this.oss = oss;
+    this.syncConfig = syncConfig;
   }
 
-  async createBackup(trigger: BackupMetadata['trigger'], description?: string): Promise<BackupMetadata> {
-    try {
-      this.onStatusChange('syncing');
-      
-      const data = exportData();
-      const metadata: Omit<BackupMetadata, 'size'> = {
-        id: nanoid(),
-        timestamp: new Date().toISOString(),
-        trigger,
-        description,
-      };
-
-      const backup = await this.storage.uploadBackup(data, metadata);
-      
-      // 清理旧备份
-      await this.storage.cleanupOldBackups(
-        this.syncConfig.maxBackups,
-        this.syncConfig.retentionDays
-      );
-
-      this.onStatusChange('idle');
-      return backup;
-    } catch (error) {
-      this.onStatusChange('error');
-      throw error;
-    }
+  async createBackup(): Promise<void> {
+    const data = await this.db.exportData();
+    await this.oss.uploadBackup(data);
   }
 
-  async restoreFromBackup(id: string): Promise<void> {
-    try {
-      this.onStatusChange('syncing');
-      
-      const { data } = await this.storage.downloadBackup(id);
-      await importData(data);
-      
-      this.onStatusChange('idle');
-    } catch (error) {
-      this.onStatusChange('error');
-      throw error;
-    }
-  }
-
-  async listBackups(): Promise<BackupMetadata[]> {
-    return this.storage.listBackups();
-  }
-
-  async deleteBackup(id: string): Promise<void> {
-    return this.storage.deleteBackup(id);
+  async restoreFromBackup(): Promise<void> {
+    const data = await this.oss.downloadBackup();
+    await this.db.importData(data);
   }
 
   startAutoBackup(): void {
@@ -76,9 +39,9 @@ export class BackupManager {
     const interval = this.getBackupInterval();
     this.autoBackupTimer = setInterval(async () => {
       try {
-        await this.createBackup('auto', '自动备份');
+        await this.createBackup();
       } catch (error) {
-        console.error('Auto backup failed:', error);
+        console.error("Auto backup failed:", error);
       }
     }, interval);
   }

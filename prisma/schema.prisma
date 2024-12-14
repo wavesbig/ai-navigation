@@ -17,13 +17,16 @@ model Setting {
   id         Int      @id @default(autoincrement())
   key        String   @unique
   value      String
-  updated_at DateTime @default(now())
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@map("settings")
 }
 
 model Website {
   id          Int      @id @default(autoincrement())
   title       String
-  url         String
+  url         String   @unique
   description String
   category    Category @relation(fields: [category_id], references: [id])
   category_id Int
@@ -32,7 +35,9 @@ model Website {
   visits      Int      @default(0)
   likes       Int      @default(0)
   created_at  DateTime @default(now())
-  updated_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  @@map("websites")
 }
 
 model Category {
@@ -40,6 +45,20 @@ model Category {
   name       String
   slug       String    @unique
   created_at DateTime  @default(now())
-  updated_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
   websites   Website[]
+
+  @@map("categories")
+}
+
+
+model FooterLink {
+  id         Int      @id @default(autoincrement())
+  title      String   // 链接标题
+  url        String   @unique // 链接地址
+  isExternal Boolean  @default(true) // 是否为外部链接
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@map("footer_links")
 }

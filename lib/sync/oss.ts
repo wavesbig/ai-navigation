@@ -1,41 +1,47 @@
-/**
- * OSS 同步接口
- * 注意：此文件仅包含接口定义，实际实现需要在服务端完成
- */
-
-import type { OSSSettings } from '../atoms';
+import OSS from "ali-oss";
+import type { OSSSettings } from "../atoms";
 
 export interface OSSInterface {
-  // 初始化 OSS 客户端
-  initialize(config: OSSSettings): Promise<void>;
-  
-  // 上传数据备份
-  uploadBackup(data: any, timestamp: string): Promise<string>;
-  
-  // 下载数据备份
-  downloadBackup(key: string): Promise<any>;
-  
-  // 列出所有备份
-  listBackups(): Promise<Array<{
-    key: string;
-    timestamp: string;
-    size: number;
-  }>>;
-  
-  // 删除备份
+  uploadBackup(data: Buffer): Promise<string>;
+  downloadBackup(): Promise<Buffer>;
   deleteBackup(key: string): Promise<void>;
 }
 
-// 阿里云 OSS 实现示例（需要在服务端完成）
 export class AliyunOSS implements OSSInterface {
-  private client: any; // 使用实际的 OSS 客户端
-  private config: OSSSettings;
+  private client: OSS;
 
-  async initialize(config: OSSSettings) {
-    this.config = config;
-    // 初始化 OSS 客户端
-    // this.client = new OSS({...});
+  constructor(config: OSSSettings) {
+    this.client = new OSS({
+      region: config.region,
+      accessKeyId: config.accessKeyId,
+      accessKeySecret: config.accessKeySecret,
+      bucket: config.bucket,
+    });
   }
 
-  // 实现所有接口方法...
+  async uploadBackup(data: Buffer): Promise<string> {
+    if (!process.env.OSS_DATA_KEY) {
+      throw new Error("OSS_DATA_KEY is not set");
+    }
+    const filename = process.env.OSS_DATA_KEY;
+    const result = await this.client.put(filename, data);
+    return result.url;
+  }
+
+  async downloadBackup(): Promise<Buffer> {
+    if (!process.env.OSS_DATA_KEY) {
+      throw new Error("OSS_DATA_KEY is not set");
+    }
+    const key = process.env.OSS_DATA_KEY;
+    const result = await this.client.get(key);
+    return result.content;
+  }
+
+  async deleteBackup(): Promise<void> {
+    if (!process.env.OSS_DATA_KEY) {
+      throw new Error("OSS_DATA_KEY is not set");
+    }
+    const key = process.env.OSS_DATA_KEY;
+    await this.client.delete(key);
+  }
 }

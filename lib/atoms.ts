@@ -8,6 +8,7 @@ export const categoriesAtom = atomWithStorage<Category[]>('categories', []);
 export const searchQueryAtom = atom('');
 export const selectedCategoryAtom = atom<number | null>(null);
 export const isAdminModeAtom = atomWithStorage('isAdminMode', false);
+export const isCompactModeAtom = atomWithStorage('isCompactMode', false);
 
 // 网站基本设置
 export interface GeneralSettings {

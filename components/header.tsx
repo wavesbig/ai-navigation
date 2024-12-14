@@ -43,7 +43,6 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
-import { incrementVisits } from '@/lib/db';
 import type { Website } from '@/lib/types';
 
 const ADMIN_PASSWORD = '123456';
@@ -96,8 +95,8 @@ export default function Header() {
     router.push('/');
   };
 
-  const handleVisit = (website: Website) => {
-    incrementVisits(website.id);
+  const handleVisit = async (website: Website) => {
+    await fetch(`/api/websites/${website.id}/visit`, { method: 'POST' });
     window.open(website.url, '_blank');
   };
 
@@ -117,7 +116,7 @@ export default function Header() {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-4">
-            <div className="relative flex items-center">
+            {/* <div className="relative flex items-center">
               <Command className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 type="search"
@@ -126,7 +125,7 @@ export default function Header() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
-            </div>
+            </div> */}
             
             <Popover open={showRankings} onOpenChange={setShowRankings}>
               <PopoverTrigger asChild>
@@ -140,12 +139,12 @@ export default function Header() {
               </PopoverContent>
             </Popover>
 
-            <Link href="/news">
+            {/* <Link href="/news">
               <Button variant="ghost" size="sm" className="flex items-center gap-2">
                 <Newspaper className="h-4 w-4" />
                 <span>AI资讯</span>
               </Button>
-            </Link>
+            </Link> */}
 
             <Link href="/submit">
               <Button size="sm" className="flex items-center gap-2">

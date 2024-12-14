@@ -5,6 +5,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import { isAdminModeAtom } from '@/lib/atoms';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useEffect } from 'react';
+import { motion } from 'framer-motion';
 
 export default function AdminLayout({
   children,
@@ -28,26 +29,19 @@ export default function AdminLayout({
   const currentTab = pathname === '/admin' ? 'websites' : 'settings';
 
   return (
-    <div className="container mx-auto px-4 py-8 space-y-8">
-      <Tabs value={currentTab} className="w-full">
-        <TabsList className="w-full justify-start border-b rounded-none bg-transparent p-0">
-          <TabsTrigger 
-            value="websites" 
-            onClick={() => router.push('/admin')}
-            className="data-[state=active]:bg-background rounded-none border-b-2 border-transparent data-[state=active]:border-primary"
-          >
-            网站管理
-          </TabsTrigger>
-          <TabsTrigger 
-            value="settings"
-            onClick={() => router.push('/admin/settings')}
-            className="data-[state=active]:bg-background rounded-none border-b-2 border-transparent data-[state=active]:border-primary"
-          >
-            网站设置
-          </TabsTrigger>
-        </TabsList>
-      </Tabs>
-      {children}
-    </div>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className="container mx-auto px-4 py-8 space-y-8"
+    >
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.2, duration: 0.3 }}
+      >
+        {children}
+      </motion.div>
+    </motion.div>
   );
 }
