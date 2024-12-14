@@ -1,12 +1,6 @@
 {
-  "version": 2,
-  "buildCommand": "npm run build",
-  "outputDirectory": "out",
-  "installCommand": "npm install",
   "framework": "nextjs",
   "regions": ["hkg1"],
-  "env": {
-    "NEXT_PUBLIC_SITE_NAME": "AI 导航",
-    "NEXT_PUBLIC_SITE_URL": "https://ai-nav.vercel.app"
-  }
+  "cleanUrls": true,
+  "trailingSlash": false
 }
