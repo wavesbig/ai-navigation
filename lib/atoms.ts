@@ -77,7 +77,7 @@ export interface FooterSettings {
   customHtml: string;
 }
 
-export const footerSettingsAtom = atomWithStorage<FooterSettings>('footerSettings', {
+export const footerSettingsAtom = atom<FooterSettings>({
   copyright: '© 2024 网站导航',
   icp: '京ICP备XXXXXXXX号',
   links: [],
