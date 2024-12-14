@@ -22,6 +22,8 @@ import {
   gridContainerVariants,
 } from '@/lib/animations';
 import type { Website } from '@/lib/types';
+import { useTheme } from 'next-themes';
+import { cn } from '@/lib/utils';
 
 interface CategoryResponse {
   code: number;
@@ -43,6 +45,7 @@ export default function Home() {
   const [selectedCategory] = useAtom(selectedCategoryAtom);
   const contentRef = useRef<HTMLDivElement>(null);
   const { scrollY } = useScroll();
+  const { theme } = useTheme();
 
   // Enhanced scroll-based animations
   const heroOpacity = useTransform(scrollY, [0, 400], [1, 0]);
@@ -107,6 +110,15 @@ export default function Home() {
 
     setFilteredWebsites(filtered);
   }, [websites, searchQuery, selectedCategory]);
+
+  useEffect(() => {
+    if (theme === 'dark') {
+      console.log('dark');
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [theme]);
 
   const handleVisit = (website: Website) => {
     fetch(`/api/websites/${website.id}/visit`, { method: 'POST' });
@@ -204,7 +216,7 @@ export default function Home() {
                 </span>
               </motion.h1>
               <motion.div
-                initial={false}
+                initial={false} 
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.8, delay: 0.4 }}
               >

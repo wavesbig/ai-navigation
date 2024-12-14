@@ -39,7 +39,7 @@ export function Typewriter({ text, speed = 50, delay = 500 }: TypewriterProps) {
     <motion.p
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="text-xl text-muted-foreground max-w-2xl mx-auto relative"
+      className="text-l text-muted-foreground max-w-2xl mx-auto relative"
     >
       {displayText}
       <motion.span
@@ -50,7 +50,12 @@ export function Typewriter({ text, speed = 50, delay = 500 }: TypewriterProps) {
           repeat: Infinity,
           ease: "linear",
         }}
-        className={`absolute ${currentIndex >= text.length ? 'hidden' : ''}`}
+        className={`inline-block ${currentIndex >= text.length ? 'hidden' : ''}`}
+        style={{
+          marginLeft: '1px',
+          lineHeight: '1.2',
+          verticalAlign: 'baseline'
+        }}
       >
         |
       </motion.span>

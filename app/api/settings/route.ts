@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { prisma } from '@/lib/db';
 import type { Setting } from '@prisma/client';
 
 export interface SettingItem {
@@ -17,19 +17,15 @@ export async function GET() {
   try {
     const settings = await prisma.setting.findMany();
     
-    // Transform settings to a consistent format
-    const formattedSettings = settings.map((setting) => ({
-      key: setting.key,
-      value: setting.value
-    }));
-
-    return NextResponse.json(AjaxResponse.ok(formattedSettings));
+    // Transform settings array into an object
+    const settingsObject = settings.reduce((acc, curr) => ({
+      ...acc,
+      [curr.key]: curr.value
+    }), {});
+    
+    return NextResponse.json(settingsObject);
   } catch (error) {
-    console.error("Failed to fetch settings:", error);
-    return NextResponse.json(
-      AjaxResponse.fail("Failed to fetch settings"),
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to fetch settings' }, { status: 500 });
   }
 }
 

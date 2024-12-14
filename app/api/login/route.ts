@@ -12,12 +12,9 @@ export async function POST(request: Request) {
   try {
     const { password } = await request.json();
 
-    const storedPassword = await prisma.setting.findFirst({
-      where: { key: "password" },
-      select: { value: true },
-    });
+    const storedPassword = process.env.ADMIN_PASSWORD;
 
-    if (!storedPassword || storedPassword.value !== password) {
+    if (!storedPassword || storedPassword !== password) {
       return NextResponse.json(AjaxResponse.fail("用户名或密码错误"), {
         status: 401,
       });

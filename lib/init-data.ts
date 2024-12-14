@@ -1,4 +1,4 @@
-const { prisma } = require('./prisma');
+const { prisma } = require('./db');
 import type { Prisma, PrismaClient, Category } from '@prisma/client';
 
 const defaultCategories = [
@@ -61,6 +61,10 @@ const defaultSettings = [
   { key: 'siteIcp', value: '' },
   { key: 'siteFooter', value: '© 2024 AI导航. All rights reserved.' },
   { key: 'adminPassword', value: process.env.ADMIN_PASSWORD || 'admin' },
+  { key: 'title', value: 'AI导航' },
+  { key: 'description', value: '发现、分享和收藏优质AI工具与资源，让你的人工智能生活更美好' },
+  { key: 'logo', value: 'static/logo.png' },
+  { key: 'keywords', value: 'AI导航, AI工具, 人工智能, AI资源, AI网站导航' },
 ];
 
 interface FooterLinkInput {
@@ -163,6 +167,35 @@ export async function initializeData() {
   }
 }
 
+export async function initializeSettings() {
+  const requiredSettings = [
+    { key: 'title', value: 'AI导航' },
+    { key: 'description', value: '发现、分享和收藏优质AI工具与资源' },
+    { key: 'keywords', value: 'AI导航,AI工具,人工智能,AI资源' },
+    { key: 'logo', value: '/static/logo.png' },
+    { key: 'siteIcp', value: '' },
+    { key: 'siteFooter', value: '© 2024 AI导航. All rights reserved.' },
+    { key: 'allowSubmissions', value: 'true' },
+    { key: 'requireApproval', value: 'true' },
+    { key: 'itemsPerPage', value: '12' },
+    { key: 'adminPassword', value: process.env.ADMIN_PASSWORD || 'admin' },
+    { key: 'siteUrl', value: process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000' },
+    { key: 'siteEmail', value: process.env.SITE_EMAIL || 'admin@example.com' },
+    { key: 'siteCopyright', value: '© 2024 AI导航. All rights reserved.' },
+    { key: 'googleAnalytics', value: '' },
+    { key: 'baiduAnalytics', value: '' }
+  ];
+  
+  for (const setting of requiredSettings) {
+    await prisma.setting.upsert({
+      where: { key: setting.key },
+      update: { value: setting.value },
+      create: setting,
+    });
+  }
+}
+
 module.exports = {
-  initializeData
+  initializeData,
+  initializeSettings
 }; 

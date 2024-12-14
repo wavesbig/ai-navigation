@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { cookies } from "next/headers";
 import { AjaxResponse } from "../types";
 
 export function middleware(request: NextRequest) {
@@ -37,5 +36,5 @@ function verifyToken(token: string): boolean {
 }
 
 export const config = {
-  matcher: ["/:path*"],
+  matcher: ["/api/:path*"],
 };
