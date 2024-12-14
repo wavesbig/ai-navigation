@@ -45,7 +45,7 @@ import {
 import { cn } from '@/lib/utils';
 import type { Website } from '@/lib/types';
 
-const ADMIN_PASSWORD = '123456';
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
 const CLICK_THRESHOLD = 5;
 const CLICK_TIMEOUT = 3000;
 
