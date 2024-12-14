@@ -77,16 +77,31 @@ export default function Header() {
     }
   };
 
-  const handlePasswordSubmit = (e: React.FormEvent) => {
+  const handlePasswordSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (password === ADMIN_PASSWORD) {
-      setIsAdmin(true);
-      setShowPasswordDialog(false);
-      setPassword('');
-      setError('');
-      router.push('/admin');
-    } else {
-      setError('密码错误');
+    
+    try {
+      const response = await fetch('/api/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ password })
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setIsAdmin(true);
+        setShowPasswordDialog(false);
+        setPassword('');
+        setError('');
+        router.push('/admin');
+      } else {
+        setError(data.message);
+      }
+    } catch (err) {
+      setError('登录失败，请重试');
     }
   };
 

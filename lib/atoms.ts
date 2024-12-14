@@ -71,7 +71,7 @@ export interface FooterSettings {
   copyright: string;
   icp: string;
   links: Array<{
-    name: string;
+    title: string;
     url: string;
   }>;
   customHtml: string;

@@ -33,7 +33,7 @@ export function WebsiteForm() {
           if (!res.ok) throw new Error('Failed to load categories');
           return res.json();
         });
-        setCategories(categoryData);
+        setCategories(categoryData.data);
       } catch (error) {
         toast({
           title: '加载分类失败',

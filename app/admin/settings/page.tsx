@@ -8,6 +8,7 @@ import { SettingsManager } from "@/components/admin/settings-manager";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { toast } from "@/hooks/use-toast";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -52,7 +53,8 @@ export default function SettingsPage() {
     siteEmail: '',
     siteCopyright: '',
     googleAnalytics: '',
-    baiduAnalytics: ''
+    baiduAnalytics: '',
+    copyright: '',
   });
   const [loading, setLoading] = useState(true);
 
@@ -69,7 +71,7 @@ export default function SettingsPage() {
         const response = await fetch('/api/settings')
         if (response.ok) {
           const data = await response.json()
-          setSettings(data || {})
+          setSettings(data.data || {})
         }
       } catch (error) {
         console.error('Failed to fetch settings:', error)
@@ -85,25 +87,32 @@ export default function SettingsPage() {
     e.preventDefault();
     
     try {
-      // Save each setting individually
-      for (const [key, value] of Object.entries(settings)) {
-        const response = await fetch('/api/settings', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ key, value }),
-        });
-        
-        if (!response.ok) {
-          throw new Error(`Failed to save setting: ${key}`);
-        }
+      const response = await fetch('/api/settings', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(settings),
+      }).then(res => res.json());
+      
+      if (!response.success) {
+        toast({
+          title: '保存设置失败',
+          description: response.message,
+        })
+      } else {
+        toast({
+          title: '设置已保存',
+          description: '网站设置已成功保存',
+        })
       }
       
-      alert('设置保存成功！');
     } catch (error) {
       console.error('Failed to save settings:', error);
-      alert('保存设置��败，请重试！');
+      toast({
+        title: '保存设置失败', 
+        description: '请重试',
+      })
     }
   };
 
@@ -283,8 +292,8 @@ export default function SettingsPage() {
                 <input
                   type="text"
                   className="w-full px-3 py-2 border rounded-md"
-                  value={settings.siteCopyright || ''}
-                  onChange={(e) => setSettings({ ...settings, siteCopyright: e.target.value })}
+                  value={settings.copyright || ''}
+                  onChange={(e) => setSettings({ ...settings, copyright: e.target.value })}
                 />
               </div>
 

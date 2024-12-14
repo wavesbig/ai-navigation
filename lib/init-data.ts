@@ -65,6 +65,8 @@ const defaultSettings = [
   { key: 'description', value: '发现、分享和收藏优质AI工具与资源，让你的人工智能生活更美好' },
   { key: 'logo', value: 'static/logo.png' },
   { key: 'keywords', value: 'AI导航, AI工具, 人工智能, AI资源, AI网站导航' },
+  { key: 'copyright', value: '© 2024 AI导航. All rights reserved.' },
+  { key: 'customHtml', value: '' },
 ];
 
 interface FooterLinkInput {

@@ -29,22 +29,21 @@ export function useSettings() {
       try {
         const response = await fetch('/api/settings');
         if (!response.ok) throw new Error('Failed to load settings');
-        const { success, data } = await response.json() as SettingsResponse;
+        const { success, data } = await response.json();
         if (!success) throw new Error('Failed to load settings');
 
-        // Convert array of settings to object
-        const settingsObject = data.reduce((acc, { key, value }) => {
-          let parsedValue: any = value;
-          if (value === 'true') parsedValue = true;
-          if (value === 'false') parsedValue = false;
-          if (!isNaN(Number(value))) parsedValue = Number(value);
-          return { ...acc, [key]: parsedValue };
-        }, {} as Settings);
+        // Convert string values to proper types
+        const settingsObject = {
+          ...data,
+          allowSubmissions: data.allowSubmissions === 'true',
+          requireApproval: data.requireApproval === 'true',
+          itemsPerPage: Number(data.itemsPerPage) || 12
+        };
 
         setSettings(settingsObject);
       } catch (error) {
         toast({
-          title: '加载设置失败',
+          title: '加载设置失败', 
           description: '使用默认设置继续',
           variant: 'destructive',
         });
@@ -64,4 +63,4 @@ export function useSettings() {
   }, [toast]);
 
   return { settings, loading };
-} 
+}

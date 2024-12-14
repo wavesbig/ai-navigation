@@ -22,7 +22,7 @@ export async function generateMetadata(): Promise<Metadata> {
       title: settingsMap.title || 'AI导航',
       description: settingsMap.description || '发现、分享和收藏优质AI工具与资源，让你的人工智能生活更美好',
       icons: {
-        icon: 'static/logo.png',
+        icon: '/logo.png',
       },
       keywords: ['AI导航', 'AI工具', '人工智能', 'AI资源', 'AI网站导航'],
     };

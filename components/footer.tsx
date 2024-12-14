@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useAtom } from 'jotai';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
@@ -15,11 +15,11 @@ export default function Footer() {
   const [isAdmin] = useAtom(isAdminModeAtom);
   const [settings, setSettings] = useAtom(footerSettingsAtom);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [newLink, setNewLink] = useState({ name: '', url: '' });
+  const [newLink, setNewLink] = useState({ title: '', url: '' });
   const { toast } = useToast();
 
   const handleAddLink = () => {
-    if (!newLink.name || !newLink.url) {
+    if (!newLink.title || !newLink.url) {
       toast({
         title: '错误',
         description: '请填写完整的链接信息',
@@ -32,8 +32,16 @@ export default function Footer() {
       ...prev,
       links: [...prev.links, newLink],
     }));
+    
+    fetch('/api/footer-links', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(newLink)
+    });
 
-    setNewLink({ name: '', url: '' });
+    setNewLink({ title: '', url: '' });
     setIsDialogOpen(false);
 
     toast({
@@ -48,10 +56,46 @@ export default function Footer() {
       links: prev.links.filter((_, i) => i !== index),
     }));
 
+    fetch('/api/footer-links?id=' + index, {
+      method: 'DELETE',
+    });
+
     toast({
       title: '删除成功',
       description: '页脚链接已删除',
     });
+  };
+
+  useEffect(() => {
+    fetchFooterSettings();
+  }, []);
+
+  const fetchFooterSettings = async () => {
+    try {
+      // Fetch footer links
+      const foot_links = await fetch('/api/footer-links').then(res => res.json());
+      
+      // Fetch footer settings
+      const foot_settings = await fetch('/api/settings', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          keys: ['siteIcp', 'customHtml', 'copyright']
+        })
+      }).then(res => res.json());
+
+      // Merge settings
+      setSettings({
+        links: foot_links.data,
+        copyright: foot_settings.data.copyright,
+        icp: foot_settings.data.siteIcp,
+        customHtml: foot_settings.data.customHtml
+      });
+    } catch (error) {
+      console.error('Failed to fetch footer settings:', error);
+    }
   };
 
   return (
@@ -72,7 +116,7 @@ export default function Footer() {
                     rel="noopener noreferrer"
                     className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                   >
-                    {link.name}
+                    {link.title}
                   </a>
                   {isAdmin && (
                     <Button
@@ -104,9 +148,23 @@ export default function Footer() {
           </div>
           
           <div className="flex items-center gap-4 text-sm text-muted-foreground shrink-0">
-            <span>{settings.copyright}</span>
+            <a
+              href="https://github.com/liyown/ai-navigation"
+              target="_blank"
+              rel="noopener noreferrer" 
+              className="hover:text-foreground transition-colors"
+            >
+              {settings.copyright}
+            </a>
             <span className="text-muted-foreground/60">|</span>
-            <span>{settings.icp}</span>
+            <a 
+              href="https://beian.miit.gov.cn/"
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="hover:text-foreground transition-colors"
+            >
+              {settings.icp}
+            </a>
           </div>
         </div>
         {settings.customHtml && (
@@ -126,8 +184,8 @@ export default function Footer() {
             <div className="space-y-2">
               <label className="text-sm font-medium">链接名称</label>
               <Input
-                value={newLink.name}
-                onChange={(e) => setNewLink(prev => ({ ...prev, name: e.target.value }))}
+                value={newLink.title}
+                onChange={(e) => setNewLink(prev => ({ ...prev, title: e.target.value }))}
                 placeholder="输入链接名称"
               />
             </div>

@@ -80,7 +80,7 @@ export function Rankings({ websites, onVisit }: RankingsProps) {
 
       {/* Rankings List */}
       <div className="divide-y divide-border/50">
-        <AnimatePresence mode="wait">
+        <AnimatePresence mode="popLayout">
           {sortedWebsites.map((website, index) => (
             <motion.div
               key={`${website.id}-${activeTab}`}

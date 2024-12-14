@@ -14,7 +14,7 @@ export default function SubmitPage() {
       className="max-w-2xl mx-auto"
     >
       <div className="flex items-center justify-between mb-8">
-        <h1 className="text-4xl font-bold">提交网站</h1>
+        <h1 className="text-4xl font-bold mt-10">提交网站</h1>
         <Link href="/">
           <Button variant="outline" className="flex items-center gap-2">
             <ArrowLeft className="h-4 w-4" />

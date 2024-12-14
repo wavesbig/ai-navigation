@@ -22,7 +22,7 @@ export class AjaxResponse<T> {
     return new AjaxResponse<T>(true, data, "", 200);
   }
 
-  static fail<T>(message: string, code: number = 400): AjaxResponse<T> {
+  static fail<T>(message: string, code: number = 500): AjaxResponse<T> {
     return new AjaxResponse<T>(false, null, message, code);
   }
 }

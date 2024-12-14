@@ -13,17 +13,8 @@ import WebsiteGrid from '@/components/website/website-grid';
 import { PersistentHeader } from '@/components/persistent-header';
 import { Typewriter } from '@/components/typewriter';
 import { Brain, Cpu, Sparkles, Zap } from 'lucide-react';
-import {
-  heroContainerVariants,
-  heroTitleVariants,
-  heroDescriptionVariants,
-  backgroundPatternVariants,
-  floatingIconVariants,
-  gridContainerVariants,
-} from '@/lib/animations';
 import type { Website } from '@/lib/types';
 import { useTheme } from 'next-themes';
-import { cn } from '@/lib/utils';
 
 interface CategoryResponse {
   code: number;
@@ -172,7 +163,7 @@ export default function Home() {
           }}
         >
           {/* Floating Icons */}
-          <AnimatePresence mode="wait">
+          <AnimatePresence mode="popLayout">
             {[
               { Icon: Brain, position: "left-1/4 top-1/4", size: "w-12 h-12" },
               { Icon: Cpu, position: "right-1/4 top-1/3", size: "w-10 h-10" },
