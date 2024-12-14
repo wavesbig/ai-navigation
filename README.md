@@ -1,10 +1,5 @@
 # AI 导航 | AI Navigation
 
-## 发开约束
-
-### 提交约束
-
-![引用仓库的这个图片](static/image.png)
 
 <div align="center">
 
@@ -30,74 +25,133 @@ AI 导航是一个现代化的人工智能网站导航系统，致力于帮助�
 - 💾 **数据安全**: 支持数据备份与云端同步
 - ⚙️ **高可配置**: 可自定义主题、样式和页面布局
 
-## 🚀 快速开始
+## 🚀 界面展示
 
-### 环境要求
+### 首页
+![首页展示](doc/images/home.png)
 
-- Node.js >= 18.0.0
-- npm >= 8.0.0
 
-### 安装步骤
+## 🛠️ 开发步骤
 
-1. 克隆项目:
+### 1. 环境准备
 
+- 安装 [Node.js](https://nodejs.org/) (>= 18.0.0)
+- 安装 [Git](https://git-scm.com/)
+- 准备一个代码编辑器 (推荐 VS Code)
+- 确保有可用的包管理器 (npm >= 8.0.0)
+
+### 2. 项目设置
+
+1. Fork 项目仓库到你的 GitHub 账号
+
+2. 克隆项目到本地:
 ```bash
-git clone https://github.com/yourusername/ai-navigation.git
-cd ai-navigation
+git clone https://github.com/liyown/AI-NAV.git
+cd AI-NAV
 ```
 
-2. 安装依赖:
-
+3. 安装项目依赖:
 ```bash
 npm install
 ```
 
-3. 配置环境变量:
-
+4. 环境变量配置:
 ```bash
+# 复制环境变量模板
 cp .env.example .env.local
+
+# 编辑 .env.local 文件，填入必要的环境变量
 ```
 
-4. 启动开发服务器:
+5. 初始化数据库:
+```bash
+npx prisma migrate dev
+npm run init-data
+```
 
+### 3. 开发流程
+
+1. 创建新的功能分支:
+```bash
+git checkout -b feature/your-feature-name
+```
+
+2. 启动开发服务器:
 ```bash
 npm run dev
 ```
 
-### 部署方式
+3. 代码质量检查:
+```bash
+# 运行代码检查
+npm run lint
 
-#### Vercel 部署
+# 运行类型检查
+npm run type-check
+```
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fyourusername%2Fai-navigation)
+4. 提交代码:
+```bash
+git add .
+git commit -m "feat: 添加新功能"
+git push origin feature/your-feature-name
+```
+### 开发约束
 
-1. 点击上方按钮，使用 Vercel 一键部署
-2. 配置必要的环境变量
-3. 等待部署完成
+#### 提交规范
+
+![引用仓库的这个图片](static/image.png)
+
+## 📦 部署步骤
+
+### 1. Vercel 部署（推荐）
+
+1. Fork 本项目到你的 GitHub 账号
+
+2. 在 [Vercel](https://vercel.com/) 注册账号并连接 GitHub
+
+3. 在 Vercel 中导入项目:
+   - 点击 "New Project"
+   - 选择你 fork 的仓库
+   - 配置项目设置:
+     - Framework Preset: Next.js
+     - Root Directory: ./
+     - Node.js Version: 18.x
+
+4. 配置环境变量:
+   - 在 Vercel 项目设置中添加必要的环境变量
+   - 确保所有 .env.local 中的变量都已配置
+
+5. 部署项目:
+   - 点击 "Deploy"
+   - 等待部署完成
+   - 访问分配的域名检查部署结果
+
+### 2. 自托管部署
 
 #### Docker 部署
 
-1. 构建镜像:
-
+1. 构建 Docker 镜像:
 ```bash
-docker build -t ai-navigation .
+docker build -t ai-nav .
 ```
 
 2. 运行容器:
-
 ```bash
 docker run -d \
   -p 3000:3000 \
-  -v ./data:/app/data \
-  --name ai-navigation \
-  ai-navigation
+  -e DATABASE_URL=your_database_url \
+  -e NEXT_PUBLIC_API_URL=your_api_url \
+  --name ai-nav \
+  ai-nav
 ```
+
 
 ## 🔧 核心功能
 
 ### 网站管理
 
 - **网站提交**
-
   - 支持手动填写和自动抓取
   - 分类管理和标签系统
   - 审核流程和状态追踪
@@ -117,94 +171,37 @@ docker run -d \
 #### 安装油猴脚本
 
 1. 安装浏览器扩展
-
    - Chrome: [Tampermonkey](https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo)
    - Firefox: [Tampermonkey](https://addons.mozilla.org/en-US/firefox/addon/tampermonkey/)
    - Edge: [Tampermonkey](https://microsoftedge.microsoft.com/addons/detail/tampermonkey/iikmkjmpaadaobahmlepeloendndfphd)
 
 2. 安装收藏脚本
-
    - 点击 [安装脚本](https://ai-nav.vercel.app/scripts/ai-nav-collector.user.js)
    - 或手动复制 `scripts/ai-nav-collector.user.js` 内容创建新脚本
 
 3. 使用方法
-
    - 浮动按钮：页面右下角的收藏按钮
    - 快捷键：
      - `Alt + S`: 收藏网站
      - `Alt + N`: 收藏资讯
    - 右键菜单：通过 Tampermonkey 扩展菜单操作
 
-4. 功能特性
-   - 自动提取网页标题、描述和缩略图
-   - 支持移动端响应式布局
-   - 可自定义快捷键
-   - 收藏成功提醒
-
-### 系统设置
-
-- **主题定制**
-
-  - 自定义颜色方案
-  - 卡片样式选择
-  - 深色模式支持
-
-- **数据同步**
-  - 阿里云 OSS 备份
-  - 自动备份策略
-  - 数据恢复功能
-
-## 🔒 管理员功能
-
-### 访问方式
-
-1. 进入管理模式:
-
-   - 在网站标题处快速点击 5 次
-   - 输入默认密码: `123456`
-
-2. 管理功能:
-   - 网站审核与管理
-   - 系统设置
-   - 数据备份
-   - 主题定制
-
-### 功能说明
-
-- **内容管理**
-
-  - 网站审核流程
-  - 分类管理
-  - 资讯管理
-  - 用户反馈
-
-- **系统配置**
-  - 基本设置
-  - 主题设置
-  - OSS 配置
-  - 备份管理
-  - 页脚设置
-
 ## 🛠️ 技术栈
 
 - **前端框架**:
-
   - Next.js 13 (App Router)
   - React 18
   - TypeScript
 
 - **状态管理**:
-
   - Jotai
 
 - **UI 框架**:
-
   - Tailwind CSS
   - shadcn/ui
   - Framer Motion
 
 - **数据存储**:
-
   - SQLite
   - 阿里云 OSS
 
@@ -213,68 +210,7 @@ docker run -d \
   - Zod
   - Lucide React
 
-## 📝 开发指南
-
-### 项目结构
-
-```
-ai-navigation/
-├── app/                # Next.js 应用目录
-├── components/         # React 组件
-├── lib/               # 工具函数和类型定义
-├── public/            # 静态资源
-├── scripts/           # 油猴脚本
-└── styles/            # 全局样式
-```
-
-### 开发规范
-
-1. 代码风格
-
-   - 使用 TypeScript
-   - 遵循 ESLint 配置
-   - 使用 Prettier 格式化
-
-2. 组件开发
-
-   - 使用函数组件
-   - 遵循 React Hooks 规范
-   - 组件文档化
-
-3. 提交规范
-   - 语义化提交信息
-   - 提交前代码检查
-   - 分支管理规范
-
-## 🤝 贡献指南
-
-1. Fork 本仓库
-2. 创建特性分支 (`git checkout -b feature/AmazingFeature`)
-3. 提交更改 (`git commit -m 'Add some AmazingFeature'`)
-4. 推送到分支 (`git push origin feature/AmazingFeature`)
-5. 提交 Pull Request
-
-## 📄 开源协议
-
-本项目采用 [MIT](LICENSE) 协议开源。
-
-## 🙏 致谢
-
-感谢以下开源项目的贡献：
-
-- [Next.js](https://nextjs.org/)
-- [Tailwind CSS](https://tailwindcss.com/)
-- [shadcn/ui](https://ui.shadcn.com/)
-- [Framer Motion](https://www.framer.com/motion/)
-- [Jotai](https://jotai.org/)
-
-## 📞 联系我们
-
-- 问题反馈: [GitHub Issues](https://github.com/yourusername/ai-navigation/issues)
-- 邮件联系: your-email@example.com
-
----
-
+## 📄 开源协议 本项目采用 [MIT](LICENSE) 协议开源。
 <div align="center">
 
 **AI 导航** © 2024 Made with ❤️
