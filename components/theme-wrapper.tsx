@@ -1,8 +1,8 @@
 "use client";
 
-import { useTheme } from '@/lib/theme';
+import { useThemeEffect } from "@/hooks/use-theme-effect";
 
 export function ThemeWrapper({ children }: { children: React.ReactNode }) {
-  useTheme();
+  useThemeEffect();
   return <>{children}</>;
 }
