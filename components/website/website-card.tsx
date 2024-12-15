@@ -12,6 +12,7 @@ import { cardHoverVariants } from '@/lib/animations';
 import type { Website, Category } from '@/lib/types';
 import { useState } from 'react';
 import { WebsiteThumbnail } from './website-thumbnail';
+import { toast } from '@/hooks/use-toast';
 
 interface WebsiteCardProps {
   website: Website;
@@ -24,7 +25,6 @@ interface WebsiteCardProps {
 export function WebsiteCard({ website, category, isAdmin, onVisit, onStatusUpdate }: WebsiteCardProps) {
   const themeSettings = useAtomValue(themeSettingsAtom);
   const [likes, setLikes] = useState(website.likes);
-  const [isLiked, setIsLiked] = useState(false);
 
   const statusColors = {
     pending: 'bg-yellow-500/10 text-yellow-600 dark:text-yellow-400',
@@ -41,13 +41,18 @@ export function WebsiteCard({ website, category, isAdmin, onVisit, onStatusUpdat
   };
 
   const handleLike = async () => {
-    const method = isLiked ? 'DELETE' : 'POST';
-    const response = await fetch(`/api/websites/${website.id}/like`, { method });
-    if (response.ok) {
-      const { likes: newLikes } = await response.json();
-      setLikes(newLikes);
-      setIsLiked(!isLiked);
+    const key = `website-${website.id}-liked`;
+    if (localStorage.getItem(key)) {
+      toast({
+        title: "已点赞",
+        description: "你已经点赞了，请过段时间再来吧 (｡•́︿•̀｡)",
+      });
+      return;
     }
+    const method = 'POST';
+    fetch(`/api/websites/${website.id}/like`, { method });
+    localStorage.setItem(key, 'true');
+    setLikes(likes + 1);
   };
 
   return (
@@ -126,10 +131,15 @@ export function WebsiteCard({ website, category, isAdmin, onVisit, onStatusUpdat
             onClick={handleLike}
             className={cn(
               "h-9 w-9 p-0 bg-background/50 backdrop-blur-sm",
-              isLiked ? "text-red-500 hover:text-red-600" : "hover:text-red-500"
+              "hover:text-red-500"
             )}
           >
-            <Heart className="h-4 w-4" fill={isLiked ? "currentColor" : "none"} />
+            <motion.div
+              whileTap={{ scale: 1.4 }}
+              transition={{ duration: 0.2 }}
+            >
+              <Heart className="h-4 w-4" />
+            </motion.div>
           </Button>
           
           {isAdmin && website.status !== 'approved' && (
@@ -147,7 +157,9 @@ export function WebsiteCard({ website, category, isAdmin, onVisit, onStatusUpdat
             <Button
               variant="outline"
               size="sm"
-              onClick={() => onStatusUpdate(website.id, 'rejected')}
+              onClick={() => {
+                onStatusUpdate(website.id, 'rejected');
+              }}
               className="h-9 px-3 bg-background/50 backdrop-blur-sm hover:bg-red-500/10 hover:text-red-600 dark:hover:text-red-400"
             >
               <ThumbsDown className="h-4 w-4" />

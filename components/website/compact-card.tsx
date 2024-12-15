@@ -10,6 +10,7 @@ import { cardHoverVariants } from '@/lib/animations';
 import type { Website } from '@/lib/types';
 import { useState } from 'react';
 import { WebsiteThumbnail } from './website-thumbnail';
+import { toast } from "@/hooks/use-toast"
 
 interface CompactCardProps {
   website: Website;
@@ -18,15 +19,21 @@ interface CompactCardProps {
 
 export function CompactCard({ website, onVisit }: CompactCardProps) {
   const [likes, setLikes] = useState(website.likes);
-  const [isLiked, setIsLiked] = useState(false);
 
   const handleLike = async () => {
-    const method = isLiked ? 'DELETE' : 'POST';
+    const key = `website-${website.id}-liked`;
+    if (localStorage.getItem(key)) {
+      toast({
+        title: "已点赞",
+        description: "你已经点赞了，请过段时间再来吧 (｡•́︿•̀｡)",
+      });
+      return;
+    }
+    const method = 'POST';
     const response = await fetch(`/api/websites/${website.id}/like`, { method });
     if (response.ok) {
-      const { likes: newLikes } = await response.json();
-      setLikes(newLikes);
-      setIsLiked(!isLiked);
+      localStorage.setItem(key, 'true');
+      setLikes(likes + 1);
     }
   };
 
@@ -65,7 +72,7 @@ export function CompactCard({ website, onVisit }: CompactCardProps) {
             <div className="flex items-center gap-3 text-xs text-muted-foreground">
               <span>{website.visits}访问</span>
               <div className="flex items-center gap-1">
-                <Heart className="w-3 h-3" fill={isLiked ? "currentColor" : "none"} />
+                <Heart className="w-3 h-3" />
                 <span>{likes}</span>
               </div>
             </div>
@@ -78,10 +85,15 @@ export function CompactCard({ website, onVisit }: CompactCardProps) {
                 onClick={handleLike}
                 className={cn(
                   "h-7 w-7 p-0",
-                  isLiked ? "text-red-500 hover:text-red-600" : "hover:text-red-500"
+                  "hover:text-red-500"
                 )}
               >
-                <Heart className="h-3.5 w-3.5" fill={isLiked ? "currentColor" : "none"} />
+                <motion.div
+                  whileTap={{ scale: 1.4 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <Heart className="h-3.5 w-3.5" />
+                </motion.div>
               </Button>
 
               <Button
