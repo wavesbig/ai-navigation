@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAtomValue, useAtom } from 'jotai';
-import { isAdminModeAtom, isCompactModeAtom } from '@/lib/atoms';
+import { isAdminModeAtom, isCompactModeAtom, websitesAtom } from '@/lib/atoms';
 import { useToast } from '@/hooks/use-toast';
 import { WebsiteCard } from './website-card';
 import { CompactCard } from './compact-card';
@@ -21,14 +21,18 @@ export default function WebsiteGrid({ websites, categories, onVisit }: WebsiteGr
   const isAdmin = useAtomValue(isAdminModeAtom);
   const { toast } = useToast();
   const [isCompact, setIsCompact] = useAtom(isCompactModeAtom);
+  const [_ , setWebsites] = useAtom(websitesAtom);
+  
+  
 
+  // 不需要等待，直接打开网站
   const handleVisit = async (website: Website) => {
-    await fetch(`/api/websites/${website.id}/visit`, { method: 'POST' });
+    fetch(`/api/websites/${website.id}/visit`, { method: 'POST' })
     window.open(website.url, '_blank');
   };
 
   const handleStatusUpdate = async (id: number, status: Website['status']) => {
-    const response = await fetch(`/api/websites/${id}/status`, {
+    const response = fetch(`/api/websites/${id}/status`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -36,12 +40,12 @@ export default function WebsiteGrid({ websites, categories, onVisit }: WebsiteGr
       body: JSON.stringify({ status }),
     });
 
-    if (response.ok) {
-      toast({
-        title: '状态已更新',
-        description: status === 'approved' ? '网站已通过审核' : '网站已被拒绝',
-      });
-    }
+    setWebsites(websites.map(website => website.id === id ? { ...website, status } : website));
+    toast({
+      title: '状态已更新',
+      description: status === 'approved' ? '网站已通过审核' : '网站已被拒绝',
+    });
+
   };
 
   if (!websites || websites.length === 0) {
