@@ -7,8 +7,7 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
   experimental: {
-    optimizeCss: true,
-    disableCache: true,
+    optimizeCss: true
   },
 };
 
