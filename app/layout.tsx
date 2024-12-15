@@ -8,6 +8,7 @@ import Footer from '@/components/footer';
 import { ThemeWrapper } from '@/components/theme-wrapper';
 import { prisma } from '@/lib/db';
 import { Analytics } from '@/components/analytics';
+import { VercelAnalytics } from "@vercel/analytics/react"
 
 export async function generateMetadata(): Promise<Metadata> {
   try {
@@ -73,6 +74,7 @@ export default async function RootLayout({
             </ThemeWrapper>
           </ThemeProvider>
         </StoreProvider>
+        <VercelAnalytics />
       </body>
     </html>
   );
