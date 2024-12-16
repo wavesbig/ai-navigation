@@ -1,8 +1,11 @@
-const { initializeData } = require('../lib/init-data');
+const { initializeData, initializeSettings } = require('../lib/init-data');
 
 async function main() {
   try {
-    await initializeData();
+    await Promise.all([
+      initializeData(),
+      initializeSettings()
+    ]);
     process.exit(0);
   } catch (error) {
     console.error('初始化失败:', error);

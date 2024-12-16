@@ -8,7 +8,8 @@ import Footer from '@/components/footer';
 import { ThemeWrapper } from '@/components/theme-wrapper';
 import { prisma } from '@/lib/db';
 import { Analytics } from '@/components/analytics';
-import { VercelAnalytics } from "@vercel/analytics/react"
+import { Analytics as VercelAnalytics } from "@vercel/analytics/react"
+import { WebsiteSettings } from '@/lib/types';
 
 export async function generateMetadata(): Promise<Metadata> {
   try {
@@ -47,8 +48,8 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const googleAnalytics = await prisma.setting.findFirst({ where: { key: 'googleAnalytics' } });
-  const baiduAnalytics = await prisma.setting.findFirst({ where: { key: 'baiduAnalytics' } });
+  const googleAnalytics = await prisma.setting.findFirst({ where: { key: WebsiteSettings.googleAnalytics } });
+  const baiduAnalytics = await prisma.setting.findFirst({ where: { key: WebsiteSettings.baiduAnalytics } });
 
   return (
     <html lang="zh-CN" suppressHydrationWarning >
