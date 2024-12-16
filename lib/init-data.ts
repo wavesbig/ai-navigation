@@ -1,5 +1,9 @@
 const { prisma } = require('./db');
 import type { Prisma, PrismaClient, Category } from '@prisma/client';
+import { WebsiteSettings } from './types';
+
+
+
 
 const defaultCategories = [
   { name: 'AI 聊天', slug: 'ai-chat' },
@@ -54,20 +58,7 @@ const defaultWebsites = [
   },
 ] as WebsiteInput[];
 
-const defaultSettings = [
-  { key: 'allowSubmissions', value: 'true' },
-  { key: 'requireApproval', value: 'true' },
-  { key: 'itemsPerPage', value: '12' },
-  { key: 'siteIcp', value: '' },
-  { key: 'siteFooter', value: '© 2024 AI导航. All rights reserved.' },
-  { key: 'adminPassword', value: process.env.ADMIN_PASSWORD || 'admin' },
-  { key: 'title', value: 'AI导航' },
-  { key: 'description', value: '发现、分享和收藏优质AI工具与资源，让你的人工智能生活更美好' },
-  { key: 'logo', value: 'static/logo.png' },
-  { key: 'keywords', value: 'AI导航, AI工具, 人工智能, AI资源, AI网站导航' },
-  { key: 'copyright', value: '© 2024 AI导航. All rights reserved.' },
-  { key: 'customHtml', value: '' },
-];
+
 
 interface FooterLinkInput {
   title: string;
@@ -75,22 +66,20 @@ interface FooterLinkInput {
 }
 
 const defaultFooterLinks: FooterLinkInput[] = [
-  { title: 'GitHub', url: 'https://github.com' },
-  { title: '关于我们', url: '/about' },
-  { title: '使用条款', url: '/terms' },
-  { title: '隐私政策', url: '/privacy' },
+  { title: 'GitHub', url: 'https://github.com' }
 ];
-
 export async function initializeData() {
   try {
     // 初始化分类
-    for (const category of defaultCategories) {
-      await prisma.category.upsert({
-        where: { slug: category.slug },
-        update: category,
-        create: category,
-      });
-    }
+    await Promise.all(
+      defaultCategories.map(category =>
+        prisma.category.upsert({
+          where: { slug: category.slug },
+          update: category,
+          create: category,
+        })
+      )
+    );
 
     // 获取所有分类的映射
     const categories = await prisma.category.findMany();
@@ -99,68 +88,63 @@ export async function initializeData() {
     );
 
     // 初始化网站
-    for (const website of defaultWebsites) {
-      const { category_slug, ...websiteData } = website;
-      const category_id = categoryMap.get(category_slug);
-      
-      if (category_id) {
-        const createData: Prisma.WebsiteCreateInput = {
-          ...websiteData,
-          category: { 
-            connect: { id: Number(category_id) } 
-          }
-        };
+    await Promise.all(
+      defaultWebsites.map(async website => {
+        const { category_slug, ...websiteData } = website;
+        const category_id = categoryMap.get(category_slug);
+        
+        if (category_id) {
+          const createData: Prisma.WebsiteCreateInput = {
+            ...websiteData,
+            category: { 
+              connect: { id: Number(category_id) } 
+            }
+          };
 
-        const updateData: Prisma.WebsiteUpdateInput = {
-          ...websiteData,
-          category: { 
-            connect: { id: Number(category_id) } 
-          }
-        };
+          const updateData: Prisma.WebsiteUpdateInput = {
+            ...websiteData,
+            category: { 
+              connect: { id: Number(category_id) } 
+            }
+          };
 
-        const existingWebsite = await prisma.website.findUnique({
-          where: { url: website.url }
-        });
-
-        if (existingWebsite) {
-          await prisma.website.update({
-            where: { id: existingWebsite.id },
-            data: updateData
+          const existingWebsite = await prisma.website.findUnique({
+            where: { url: website.url }
           });
-        } else {
-          await prisma.website.create({
-            data: createData
-          });
+
+          if (existingWebsite) {
+            return prisma.website.update({
+              where: { id: existingWebsite.id },
+              data: updateData
+            });
+          } else {
+            return prisma.website.create({
+              data: createData
+            });
+          }
         }
-      }
-    }
-
-    // 初始化设置
-    for (const setting of defaultSettings) {
-      await prisma.setting.upsert({
-        where: { key: setting.key },
-        update: { value: setting.value },
-        create: setting,
-      });
-    }
+      })
+    );
 
     // 初始化页脚链接
-    for (const link of defaultFooterLinks) {
-      const existingLink = await prisma.footerLink.findUnique({
-        where: { url: link.url }
-      });
+    await Promise.all(
+      defaultFooterLinks.map(async link => {
+        const existingLink = await prisma.footerLink.findUnique({
+          where: { url: link.url }
+        });
 
-      if (existingLink) {
-        await prisma.footerLink.update({
-          where: { id: existingLink.id },
-          data: link
-        });
-      } else {
-        await prisma.footerLink.create({
-          data: link
-        });
-      }
-    }
+        if (existingLink) {
+          return prisma.footerLink.update({
+            where: { id: existingLink.id },
+            data: link
+          });
+        } else {
+          return prisma.footerLink.create({
+            data: link
+          });
+        }
+      })
+    );
 
     console.log('数据初始化完成');
   } catch (error) {
@@ -171,30 +155,32 @@ export async function initializeData() {
 
 export async function initializeSettings() {
   const requiredSettings = [
-    { key: 'title', value: 'AI导航' },
-    { key: 'description', value: '发现、分享和收藏优质AI工具与资源' },
-    { key: 'keywords', value: 'AI导航,AI工具,人工智能,AI资源' },
-    { key: 'logo', value: '/static/logo.png' },
-    { key: 'siteIcp', value: '' },
-    { key: 'siteFooter', value: '© 2024 AI导航. All rights reserved.' },
-    { key: 'allowSubmissions', value: 'true' },
-    { key: 'requireApproval', value: 'true' },
-    { key: 'itemsPerPage', value: '12' },
-    { key: 'adminPassword', value: process.env.ADMIN_PASSWORD || 'admin' },
-    { key: 'siteUrl', value: process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000' },
-    { key: 'siteEmail', value: process.env.SITE_EMAIL || 'admin@example.com' },
-    { key: 'siteCopyright', value: '© 2024 AI导航. All rights reserved.' },
-    { key: 'googleAnalytics', value: '' },
-    { key: 'baiduAnalytics', value: '' }
+    { key: WebsiteSettings.title, value: 'AI导航' },
+    { key: WebsiteSettings.description, value: '发现、分享和收藏优质AI工具与资源' },
+    { key: WebsiteSettings.keywords, value: 'AI导航,AI工具,人工智能,AI资源' },
+    { key: WebsiteSettings.logo, value: '/static/logo.png' },
+    { key: WebsiteSettings.siteIcp, value: '' },
+    { key: WebsiteSettings.siteFooter, value: '© 2024 AI导航. All rights reserved.' },
+    { key: WebsiteSettings.allowSubmissions, value: 'true' },
+    { key: WebsiteSettings.requireApproval, value: 'true' },
+    { key: WebsiteSettings.itemsPerPage, value: '12' },
+    { key: WebsiteSettings.adminPassword, value: process.env.ADMIN_PASSWORD || 'admin' },
+    { key: WebsiteSettings.siteUrl, value: process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000' },
+    { key: WebsiteSettings.siteEmail, value: process.env.SITE_EMAIL || 'admin@example.com' },
+    { key: WebsiteSettings.siteCopyright, value: '© 2024 AI导航. All rights reserved.' },
+    { key: WebsiteSettings.googleAnalytics, value: process.env.GOOGLE_ANALYTICS || '' },
+    { key: WebsiteSettings.baiduAnalytics, value: process.env.BAIDU_ANALYTICS || '' },
   ];
   
-  for (const setting of requiredSettings) {
-    await prisma.setting.upsert({
-      where: { key: setting.key },
-      update: { value: setting.value },
-      create: setting,
-    });
-  }
+  await Promise.all(
+    requiredSettings.map(setting =>
+      prisma.setting.upsert({
+        where: { key: setting.key },
+        update: { value: setting.value },
+        create: setting,
+      })
+    )
+  );
 }
 
 module.exports = {
