@@ -29,6 +29,7 @@ AI 导航是一个现代化的人工智能网站导航系统，致力于帮助�
 
 ### 首页
 ![首页展示](doc/images/home.png)
+![深色模式](doc/images/dark-mode.png)
 
 
 ## 🛠️ 开发步骤
