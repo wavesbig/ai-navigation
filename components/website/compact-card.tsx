@@ -50,7 +50,8 @@ export function CompactCard({ website, onVisit }: CompactCardProps) {
         "bg-gradient-to-br from-background to-muted/30",
         "border-black/5 dark:border-white/5",
         "hover:border-primary/20 dark:hover:border-primary/20",
-        "transition-all duration-300"
+        "transition-all duration-300",
+        "website-card"
       )}>
         <div className="relative p-3 flex flex-col gap-2 h-full">
           {/* Icon and Title */}

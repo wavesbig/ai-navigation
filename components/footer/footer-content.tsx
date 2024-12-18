@@ -1,24 +1,29 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAtom } from 'jotai';
 import { motion } from 'framer-motion';
-import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
 import { isAdminModeAtom, footerSettingsAtom } from '@/lib/atoms';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
+import type { FooterContentProps } from './types';
 
-export default function Footer() {
+export default function FooterContent({ initialSettings }: FooterContentProps) {
   const [isAdmin] = useAtom(isAdminModeAtom);
   const [settings, setSettings] = useAtom(footerSettingsAtom);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [newLink, setNewLink] = useState({ title: '', url: '' });
   const { toast } = useToast();
 
-  const handleAddLink = () => {
+  // 初始化设置
+  useEffect(() => {
+    setSettings(initialSettings);
+  }, [initialSettings, setSettings]);
+
+  const handleAddLink = async () => {
     if (!newLink.title || !newLink.url) {
       toast({
         title: '错误',
@@ -28,73 +33,61 @@ export default function Footer() {
       return;
     }
 
-    setSettings(prev => ({
-      ...prev,
-      links: [...prev.links, newLink],
-    }));
-    
-    fetch('/api/footer-links', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(newLink)
-    });
-
-    setNewLink({ title: '', url: '' });
-    setIsDialogOpen(false);
-
-    toast({
-      title: '添加成功',
-      description: '新的页脚链接已添加',
-    });
-  };
-
-  const handleRemoveLink = (index: number) => {
-    setSettings(prev => ({
-      ...prev,
-      links: prev.links.filter((_, i) => i !== index),
-    }));
-
-    fetch('/api/footer-links?id=' + index, {
-      method: 'DELETE',
-    });
-
-    toast({
-      title: '删除成功',
-      description: '页脚链接已删除',
-    });
-  };
-
-  useEffect(() => {
-    fetchFooterSettings();
-  }, []);
-
-  const fetchFooterSettings = async () => {
     try {
-      // Fetch footer links
-      const foot_links = await fetch('/api/footer-links').then(res => res.json());
-      
-      // Fetch footer settings
-      const foot_settings = await fetch('/api/settings', {
+      const response = await fetch('/api/footer-links', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({
-          keys: ['siteIcp', 'customHtml', 'copyright']
-        })
-      }).then(res => res.json());
+        body: JSON.stringify(newLink)
+      });
 
-      // Merge settings
-      setSettings({
-        links: foot_links.data,
-        copyright: foot_settings.data.copyright,
-        icp: foot_settings.data.siteIcp,
-        customHtml: foot_settings.data.customHtml
+      if (!response.ok) throw new Error('Failed to add link');
+
+      setSettings(prev => ({
+        ...prev,
+        links: [...prev.links, newLink],
+      }));
+
+      setNewLink({ title: '', url: '' });
+      setIsDialogOpen(false);
+
+      toast({
+        title: '添加成功',
+        description: '新的页脚链接已添加',
       });
     } catch (error) {
-      console.error('Failed to fetch footer settings:', error);
+      toast({
+        title: '添加失败',
+        description: '添加页脚链接时出错',
+        variant: 'destructive',
+      });
+    }
+  };
+
+  const handleRemoveLink = async (index: number) => {
+    try {
+      const response = await fetch(`/api/footer-links?id=${index}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) throw new Error('Failed to remove link');
+
+      setSettings(prev => ({
+        ...prev,
+        links: prev.links.filter((_, i) => i !== index),
+      }));
+
+      toast({
+        title: '删除成功',
+        description: '页脚链接已删除',
+      });
+    } catch (error) {
+      toast({
+        title: '删除失败',
+        description: '删除页脚链接时出错',
+        variant: 'destructive',
+      });
     }
   };
 
@@ -210,4 +203,4 @@ export default function Footer() {
       </Dialog>
     </motion.footer>
   );
-}
+} 

@@ -1,9 +1,11 @@
 "use client";
 
 import { motion } from 'framer-motion';
+import { useEffect, useRef, useState } from 'react';
 import { SearchBox } from '@/components/search-box';
 import CategoryFilter from '@/components/category-filter';
 import { headerVariants } from '@/lib/animations';
+import { cn } from '@/lib/utils';
 import type { Category } from '@/lib/types';
 
 interface PersistentHeaderProps {
@@ -19,41 +21,48 @@ export function PersistentHeader({
   categories,
   isScrolled 
 }: PersistentHeaderProps) {
+  const [opacity, setOpacity] = useState(0);
+  const maxScroll = 200; // 滚动200px达到最大效果
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollY = window.scrollY;
+      // 计算0-1之间的值
+      const newOpacity = Math.min(scrollY / maxScroll, 1);
+      setOpacity(newOpacity);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll(); // 初始检查
+
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   return (
-    <motion.div
-      variants={headerVariants}
-      animate={isScrolled ? "scrolled" : "top"}
-      className={`
-        sticky top-14 z-30 w-full
-        transition-all duration-300
-        ${isScrolled ? 'bg-background/80 backdrop-blur-xl border-b shadow-sm' : ''}
-      `}
+    <div 
+      className={cn(
+        "sticky top-14 z-40 w-full transition-all duration-100",
+        "bg-background/[var(--tw-bg-opacity)] supports-[backdrop-filter]:bg-background/60"
+      )}
+      style={{
+        '--tw-bg-opacity': opacity * 0.95,
+        backdropFilter: `blur(${opacity * 8}px)`,
+        WebkitBackdropFilter: `blur(${opacity * 8}px)` // Safari 支持
+      } as any}
     >
       <div className="w-full px-4 py-4">
         <div className="max-w-2xl mx-auto space-y-4">
-          <motion.div 
-            layout
-            className={`
-              relative
-              ${isScrolled ? 'glass-effect rounded-lg shadow-sm' : ''}
-            `}
-          >
+          <motion.div layout>
             <SearchBox
               value={searchQuery}
               onChange={onSearchChange}
             />
           </motion.div>
-          <motion.div 
-            layout
-            className={`
-              relative
-              ${isScrolled ? 'glass-effect rounded-lg p-2 shadow-sm' : ''}
-            `}
-          >
+          <motion.div layout>
             <CategoryFilter categories={categories} />
           </motion.div>
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAtom } from 'jotai';
@@ -16,7 +16,9 @@ import {
   LogOut,
   ChevronDown,
   Command,
-  Trophy
+  Trophy,
+  Download,
+  Info
 } from 'lucide-react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
@@ -42,6 +44,12 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 import type { Website } from '@/lib/types';
 
@@ -60,21 +68,51 @@ export default function Header() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [showRankings, setShowRankings] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const router = useRouter();
+
+  // Handle window resize
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    // Check initial
+    checkMobile();
+
+    // Add resize listener
+    window.addEventListener('resize', checkMobile);
+
+    // Cleanup
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  // Close rankings when switching between mobile and desktop
+  useEffect(() => {
+    setShowRankings(false);
+  }, [isMobile]);
+
+  const handlePasswordDialogChange = (open: boolean) => {
+    if (!open) {
+      setClickCount(0);
+      setPassword('');
+      setError('');
+    }
+    setShowPasswordDialog(open);
+  };
 
   const handleTitleClick = () => {
     const now = Date.now();
     if (now - lastClickTime > CLICK_TIMEOUT) {
       setClickCount(1);
     } else {
-      setClickCount(prev => prev + 1);
+      const newCount = clickCount + 1;
+      setClickCount(newCount);
+      if (newCount === CLICK_THRESHOLD) {
+        setShowPasswordDialog(true);
+      }
     }
     setLastClickTime(now);
-
-    if (clickCount + 1 === CLICK_THRESHOLD) {
-      setShowPasswordDialog(true);
-      setClickCount(0);
-    }
   };
 
   const handlePasswordSubmit = async (e: React.FormEvent) => {
@@ -93,9 +131,7 @@ export default function Header() {
 
       if (response.ok) {
         setIsAdmin(true);
-        setShowPasswordDialog(false);
-        setPassword('');
-        setError('');
+        handlePasswordDialogChange(false);
         router.push('/admin');
       } else {
         setError(data.message);
@@ -107,12 +143,23 @@ export default function Header() {
 
   const exitAdminMode = () => {
     setIsAdmin(false);
+    setIsOpen(false);
     router.push('/');
   };
 
+  const handleMobileRankingsClick = () => {
+    setShowRankings(!showRankings);
+    setIsOpen(false);
+  };
+
   const handleVisit = async (website: Website) => {
-    await fetch(`/api/websites/${website.id}/visit`, { method: 'POST' });
-    window.open(website.url, '_blank');
+    try {
+      await fetch(`/api/websites/${website.id}/visit`, { method: 'POST' });
+      window.open(website.url, '_blank');
+    } catch (error) {
+      console.error('Failed to record visit:', error);
+      window.open(website.url, '_blank');
+    }
   };
 
   return (
@@ -131,18 +178,7 @@ export default function Header() {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-4">
-            {/* <div className="relative flex items-center">
-              <Command className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                type="search"
-                placeholder="搜索网站..."
-                className="pl-10 w-64 h-9"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-            </div> */}
-            
-            <Popover open={showRankings} onOpenChange={setShowRankings}>
+            <Popover open={showRankings && !isMobile} onOpenChange={setShowRankings}>
               <PopoverTrigger asChild>
                 <Button variant="ghost" size="sm" className="flex items-center gap-2">
                   <Trophy className="h-4 w-4" />
@@ -154,17 +190,35 @@ export default function Header() {
               </PopoverContent>
             </Popover>
 
-            {/* <Link href="/news">
-              <Button variant="ghost" size="sm" className="flex items-center gap-2">
-                <Newspaper className="h-4 w-4" />
-                <span>AI资讯</span>
-              </Button>
-            </Link> */}
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Link href="/scripts/ai-nav-collector.user.js">
+                    <Button variant="ghost" size="sm" className="flex items-center gap-2">
+                      <Download className="h-4 w-4" />
+                      <span>安装脚本</span>
+                    </Button>
+                  </Link>
+                </TooltipTrigger>
+                <TooltipContent className="max-w-[300px] p-3">
+                  <p className="font-medium mb-1">AI导航助手脚本</p>
+                  <p className="text-sm text-muted-foreground">功能：自动识别并采集当前网页的AI工具信息，快速提交到AI导航。</p>
+                  <p className="text-sm text-muted-foreground mt-1">需要先安装 Tampermonkey 或 Violentmonkey 浏览器扩展。</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
 
             <Link href="/submit">
               <Button size="sm" className="flex items-center gap-2">
                 <Plus className="h-4 w-4" />
                 <span>提交网站</span>
+              </Button>
+            </Link>
+
+            <Link href="/about">
+              <Button variant="ghost" size="sm" className="flex items-center gap-2">
+                <Info className="h-4 w-4" />
+                <span>关于</span>
               </Button>
             </Link>
 
@@ -211,34 +265,44 @@ export default function Header() {
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
-            className="md:hidden mt-4 pb-4 space-y-4"
+            className="md:hidden absolute left-0 right-0 mt-2 p-4 space-y-4 border-b bg-background/95 backdrop-blur-xl shadow-lg"
           >
-            <Input
-              type="search"
-              placeholder="搜索网站..."
-              className="w-full"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
             <div className="flex flex-col gap-2">
               <Button
                 variant="ghost"
                 className="w-full justify-start"
-                onClick={() => setShowRankings(!showRankings)}
+                onClick={handleMobileRankingsClick}
               >
                 <Trophy className="h-4 w-4 mr-2" />
                 排行榜
               </Button>
-              <Link href="/news">
-                <Button variant="ghost" className="w-full justify-start">
-                  <Newspaper className="h-4 w-4 mr-2" />
-                  AI资讯
-                </Button>
-              </Link>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Link href="/scripts/ai-nav-collector.user.js">
+                      <Button variant="ghost" className="w-full justify-start">
+                        <Download className="h-4 w-4 mr-2" />
+                        安装脚本
+                      </Button>
+                    </Link>
+                  </TooltipTrigger>
+                  <TooltipContent className="max-w-[300px] p-3">
+                    <p className="font-medium mb-1">AI导航助手脚本</p>
+                    <p className="text-sm text-muted-foreground">功能：自动识别并采集当前网页的AI工具信息，快速提交到AI导航。</p>
+                    <p className="text-sm text-muted-foreground mt-1">需要先安装 Tampermonkey 或 Violentmonkey 浏览器扩展。</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
               <Link href="/submit">
                 <Button className="w-full justify-start">
                   <Plus className="h-4 w-4 mr-2" />
                   提交网站
+                </Button>
+              </Link>
+              <Link href="/about">
+                <Button variant="ghost" className="w-full justify-start">
+                  <Info className="h-4 w-4 mr-2" />
+                  关于
                 </Button>
               </Link>
               {isAdmin && (
@@ -266,7 +330,7 @@ export default function Header() {
       </nav>
 
       {/* Admin Password Dialog */}
-      <Dialog open={showPasswordDialog} onOpenChange={setShowPasswordDialog}>
+      <Dialog open={showPasswordDialog} onOpenChange={handlePasswordDialogChange}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>管理员验证</DialogTitle>
@@ -293,14 +357,24 @@ export default function Header() {
       </Dialog>
 
       {/* Mobile Rankings Panel */}
-      {isOpen && showRankings && (
+      {showRankings && isMobile && (
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -10 }}
           className="fixed inset-x-0 top-[4.5rem] z-50 p-4 bg-background/95 backdrop-blur-xl border-b shadow-lg md:hidden"
         >
-          <Rankings websites={websites} onVisit={handleVisit} />
+          <div className="relative">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="absolute right-0 top-0 -translate-y-2"
+              onClick={() => setShowRankings(false)}
+            >
+              <X className="h-4 w-4" />
+            </Button>
+            <Rankings websites={websites} onVisit={handleVisit} />
+          </div>
         </motion.div>
       )}
     </header>

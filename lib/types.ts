@@ -33,7 +33,7 @@ export interface Website {
   url: string;
   description: string;
   category_id: number;
-  thumbnail: string;
+  thumbnail?: string;
   status: "pending" | "approved" | "rejected" | "all";
   visits: number;
   likes: number;
@@ -124,5 +124,6 @@ export enum WebsiteSettings {
   siteEmail = 'siteEmail',
   siteCopyright = 'siteCopyright',
   googleAnalytics = 'googleAnalytics',
-  baiduAnalytics = 'baiduAnalytics'
+  baiduAnalytics = 'baiduAnalytics',
+  customHtml = 'customHtml'
 }

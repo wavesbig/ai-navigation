@@ -4,7 +4,7 @@ import { ThemeProvider } from '@/components/theme-provider';
 import { StoreProvider } from '@/components/providers/store-provider';
 import { Toaster } from '@/components/ui/toaster';
 import Header from '@/components/header';
-import Footer from '@/components/footer';
+import Footer from '@/components/footer/index';
 import { ThemeWrapper } from '@/components/theme-wrapper';
 import { prisma } from '@/lib/db';
 import { Analytics } from '@/components/analytics';

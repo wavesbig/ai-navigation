@@ -79,52 +79,80 @@ export function Rankings({ websites, onVisit }: RankingsProps) {
       </div>
 
       {/* Rankings List */}
-      <div className="divide-y divide-border/50">
+      <div className="divide-y divide-border/50 relative">
         <AnimatePresence mode="popLayout">
           {sortedWebsites.map((website, index) => (
             <motion.div
               key={`${website.id}-${activeTab}`}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
+              initial={{ opacity: 0, y: 20, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -20, scale: 0.95 }}
               transition={{ 
-                duration: 0.2, 
+                duration: 0.3, 
                 delay: index * 0.05,
                 type: "spring",
-                stiffness: 300,
-                damping: 25
+                stiffness: 500,
+                damping: 40
+              }}
+              whileHover={{
+                scale: 1.01,
+                transition: { duration: 0.2 }
               }}
               className={cn(
-                "relative p-3 flex items-center gap-3 group",
-                "hover:bg-gradient-to-r hover:from-primary/5 hover:to-transparent",
-                "transition-all duration-300"
+                "relative p-3 flex items-center gap-3 group will-change-transform",
+                "hover:bg-gradient-to-r hover:from-primary/5 hover:via-primary/10 hover:to-transparent",
+                "transition-all duration-300 w-full"
               )}
             >
               {/* Rank */}
-              <div className="w-10 flex items-center justify-center">
+              <motion.div 
+                className="w-10 flex items-center justify-center shrink-0"
+                whileHover={{ scale: 1.2 }}
+                transition={{ type: "spring", stiffness: 400 }}
+              >
                 {getRankIcon(index)}
-              </div>
+              </motion.div>
 
               {/* Website Info */}
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2">
-                  <h3 className="font-medium text-sm truncate group-hover:text-primary transition-colors">
+              <div className="flex-1 min-w-0 overflow-hidden">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <h3 className="font-medium text-sm truncate group-hover:text-primary transition-colors max-w-[200px]">
                     {website.title}
                   </h3>
-                  <Badge 
-                    variant="secondary" 
-                    className={cn(
-                      "shrink-0 transition-colors",
-                      activeTab === 'visits' ? "bg-blue-500/10 text-blue-600 dark:text-blue-400" : "bg-red-500/10 text-red-600 dark:text-red-400"
-                    )}
+                  <motion.div
+                    whileHover={{ scale: 1.05 }}
+                    transition={{ type: "spring", stiffness: 400 }}
+                    className="shrink-0"
                   >
-                    {activeTab === 'visits' ? (
-                      <Eye className="h-3 w-3 mr-1" />
-                    ) : (
-                      <Heart className="h-3 w-3 mr-1" />
-                    )}
-                    {activeTab === 'visits' ? website.visits : website.likes}
-                  </Badge>
+                    <Badge 
+                      variant="secondary" 
+                      className={cn(
+                        "shrink-0 transition-all duration-300 whitespace-nowrap",
+                        activeTab === 'visits' ? "bg-blue-500/10 text-blue-600 dark:text-blue-400" : "bg-red-500/10 text-red-600 dark:text-red-400"
+                      )}
+                    >
+                      <motion.div
+                        initial={{ scale: 0.5, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        transition={{ duration: 0.2 }}
+                        className="shrink-0"
+                      >
+                        {activeTab === 'visits' ? (
+                          <Eye className="h-3 w-3 mr-1" />
+                        ) : (
+                          <Heart className="h-3 w-3 mr-1" />
+                        )}
+                      </motion.div>
+                      <motion.span
+                        key={activeTab === 'visits' ? website.visits : website.likes}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.2 }}
+                      >
+                        {activeTab === 'visits' ? website.visits : website.likes}
+                      </motion.span>
+                    </Badge>
+                  </motion.div>
                 </div>
                 <p className="text-xs text-muted-foreground truncate mt-0.5">
                   {website.description}
@@ -132,18 +160,24 @@ export function Rankings({ websites, onVisit }: RankingsProps) {
               </div>
 
               {/* Visit Button */}
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => onVisit(website)}
-                className={cn(
-                  "h-8 w-8 shrink-0",
-                  "opacity-0 translate-x-2 group-hover:opacity-100 group-hover:translate-x-0",
-                  "transition-all duration-300"
-                )}
+              <motion.div
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+                className="shrink-0"
               >
-                <ArrowUpRight className="h-4 w-4" />
-              </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => onVisit(website)}
+                  className={cn(
+                    "h-8 w-8 shrink-0",
+                    "opacity-0 translate-x-2 group-hover:opacity-100 group-hover:translate-x-0",
+                    "transition-all duration-300"
+                  )}
+                >
+                  <ArrowUpRight className="h-4 w-4" />
+                </Button>
+              </motion.div>
             </motion.div>
           ))}
         </AnimatePresence>

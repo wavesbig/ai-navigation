@@ -49,13 +49,33 @@ export async function POST(request: Request) {
       });
     }
 
+    // Check if URL already exists
+    const existingWebsite = await prisma.website.findUnique({
+      where: { url: data.url },
+    });
+
+    if (existingWebsite) {
+      return NextResponse.json(AjaxResponse.fail("URL already exists"), {
+        status: 400,
+      });
+    }
+
+    // Validate URL format
+    try {
+      new URL(data.url);
+    } catch (error) {
+      return NextResponse.json(AjaxResponse.fail("Invalid URL format"), {
+        status: 400,
+      });
+    }
+
     const website = await prisma.website.create({
       data: {
-        title: data.title,
-        url: data.url,
-        description: data.description || "",
+        title: data.title.trim(),
+        url: data.url.trim(),
+        description: data.description?.trim() || "",
         category_id: Number(data.category_id),
-        thumbnail: data.thumbnail || "",
+        thumbnail: data.thumbnail?.trim() || "",
         status: data.status || "pending",
       },
     });
