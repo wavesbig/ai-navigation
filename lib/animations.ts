@@ -144,11 +144,9 @@ export const headerVariants: Variants = {
 export const cardHoverVariants: Variants = {
   initial: {
     scale: 1,
-    y: 0,
   },
   hover: {
     scale: 1.02,
-    y: -4,
     transition: {
       type: "spring",
       stiffness: 400,
@@ -162,7 +160,16 @@ export const cardHoverVariants: Variants = {
       stiffness: 400,
       damping: 25,
     }
-  }
+  },
+};
+
+// Layout animation for shared elements
+export const sharedLayoutTransition = {
+  type: "spring",
+  stiffness: 350,
+  damping: 25,
+  mass: 1,
+  duration: 0.35,
 };
 
 // Common transitions
@@ -175,4 +182,45 @@ export const springTransition = {
 export const easeTransition = {
   type: "ease",
   duration: 0.5,
+};
+
+export const springTransitionProps = {
+  type: "spring",
+  stiffness: 300,
+  damping: 30,
+  mass: 0.8,
+};
+
+// Text hover animations for home page
+export const textCharacterVariants: Variants = {
+  initial: {
+    scale: 1,
+    y: 0,
+  },
+  hover: (i: number) => ({
+    scale: [1, 1.15, 1.05],
+    y: [0, -8, -4],
+    transition: {
+      type: "spring",
+      stiffness: 400,
+      damping: 12,
+      mass: 0.2,
+      delay: i * 0.025,
+      duration: 0.4,
+      times: [0, 0.4, 1],
+    }
+  }),
+};
+
+// Text container animations for home page
+export const textContainerVariants: Variants = {
+  initial: {
+    opacity: 1,
+  },
+  hover: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.015,
+    }
+  },
 };

@@ -15,6 +15,8 @@ import { Typewriter } from '@/components/typewriter';
 import { Brain, Cpu, Sparkles, Zap } from 'lucide-react';
 import type { Website, Category } from '@/lib/types';
 import { useTheme } from 'next-themes';
+import { textCharacterVariants, textContainerVariants } from '@/lib/animations';
+import { WaveText } from '@/components/ui/wave-text';
 
 interface HomePageProps {
   initialWebsites: Website[];
@@ -156,16 +158,11 @@ export default function HomePage({ initialWebsites, initialCategories }: HomePag
           <div className="max-w-4xl mx-auto text-center space-y-8">
             {/* Title */}
             <motion.div className="space-y-4">
-              <motion.h1
-                initial={false}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.2 }}
-                className="text-4xl md:text-5xl lg:text-7xl font-bold tracking-tight"
-              >
-                <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary via-primary/80 to-primary/60">
-                  探索AI新世界
-                </span>
-              </motion.h1>
+              <div className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight">
+                <WaveText className="text-primary">
+                  发现探索AI新世界的乐趣
+                </WaveText>
+              </div>
               <motion.div
                 initial={false} 
                 animate={{ opacity: 1 }}

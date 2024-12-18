@@ -6,11 +6,12 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Heart, Globe, ArrowUpRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { cardHoverVariants } from '@/lib/animations';
+import { cardHoverVariants, sharedLayoutTransition } from '@/lib/animations';
 import type { Website } from '@/lib/types';
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { WebsiteThumbnail } from './website-thumbnail';
 import { toast } from "@/hooks/use-toast"
+import { useCardTilt } from '@/lib/hooks/use-card-tilt';
 
 interface CompactCardProps {
   website: Website;
@@ -19,6 +20,11 @@ interface CompactCardProps {
 
 export function CompactCard({ website, onVisit }: CompactCardProps) {
   const [likes, setLikes] = useState(website.likes);
+  const { cardRef, tiltProps } = useCardTilt({
+    maxTiltDegree: 10, // 减小倾斜角度
+    scale: 1.02, // 减小缩放比例
+    transitionZ: 10, // 减小Z轴位移
+  });
 
   const handleLike = async () => {
     const key = `website-${website.id}-liked`;
@@ -38,26 +44,35 @@ export function CompactCard({ website, onVisit }: CompactCardProps) {
   };
 
   return (
-    <motion.div
-      variants={cardHoverVariants}
-      initial="initial"
-      whileHover="hover"
-      whileTap="tap"
-      layout
+    <div
+      ref={cardRef}
+      {...tiltProps}
+      className="h-full card-container"
     >
-      <Card className={cn(
-        "group relative overflow-hidden h-full",
-        "bg-gradient-to-br from-background to-muted/30",
-        "border-black/5 dark:border-white/5",
-        "hover:border-primary/20 dark:hover:border-primary/20",
-        "transition-all duration-300",
-        "website-card"
-      )}>
-        <div className="relative p-3 flex flex-col gap-2 h-full">
-          {/* Icon and Title */}
-          <div className="flex items-center gap-2 min-w-0">
-            <WebsiteThumbnail url={website.url} thumbnail={website.thumbnail} title={website.title} />
-            <div className="min-w-0 flex-1">
+      <motion.div
+        variants={cardHoverVariants}
+        initial="initial"
+        whileHover="hover"
+        whileTap="tap"
+        layoutId={`website-${website.id}`}
+        transition={sharedLayoutTransition}
+      >
+        <Card className={cn(
+          "group relative h-full flex flex-col overflow-hidden",
+          "bg-background/40 backdrop-blur-md backdrop-saturate-150",
+          "border-white/20 dark:border-white/10",
+          "hover:border-primary/20 dark:hover:border-primary/20",
+          "hover:bg-background/50 hover:backdrop-blur-xl",
+          "shadow-sm hover:shadow-lg",
+          "transition-colors duration-300"
+        )}>
+          {/* Background Gradient */}
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background/5 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-700" />
+          
+          {/* Content */}
+          <div className="relative p-3 flex items-center gap-3">
+            <WebsiteThumbnail url={website.url} thumbnail={website.thumbnail} title={website.title} size="sm" />
+            <div className="flex-1 min-w-0">
               <h3 className="font-medium text-sm line-clamp-1 group-hover:text-primary transition-colors">
                 {website.title}
               </h3>
@@ -65,50 +80,17 @@ export function CompactCard({ website, onVisit }: CompactCardProps) {
                 {website.description}
               </p>
             </div>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 shrink-0"
+              onClick={() => onVisit(website)}
+            >
+              <ArrowUpRight className="h-4 w-4" />
+            </Button>
           </div>
-
-          {/* Stats and Actions */}
-          <div className="flex items-center justify-between mt-auto pt-2 border-t border-border/50">
-            {/* Stats */}
-            <div className="flex items-center gap-3 text-xs text-muted-foreground">
-              <span>{website.visits}访问</span>
-              <div className="flex items-center gap-1">
-                <Heart className="w-3 h-3" />
-                <span>{likes}</span>
-              </div>
-            </div>
-
-            {/* Actions */}
-            <div className="flex gap-1">
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={handleLike}
-                className={cn(
-                  "h-7 w-7 p-0",
-                  "hover:text-red-500"
-                )}
-              >
-                <motion.div
-                  whileTap={{ scale: 1.4 }}
-                  transition={{ duration: 0.2 }}
-                >
-                  <Heart className="h-3.5 w-3.5" />
-                </motion.div>
-              </Button>
-
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => onVisit(website)}
-                className="h-7 w-7 p-0 hover:text-primary"
-              >
-                <ArrowUpRight className="h-3.5 w-3.5" />
-              </Button>
-            </div>
-          </div>
-        </div>
-      </Card>
-    </motion.div>
+        </Card>
+      </motion.div>
+    </div>
   );
 }

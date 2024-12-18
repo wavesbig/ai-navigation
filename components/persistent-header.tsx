@@ -40,15 +40,13 @@ export function PersistentHeader({
 
   return (
     <div 
-      className={cn(
-        "sticky top-14 z-40 w-full transition-all duration-100",
-        "bg-background/[var(--tw-bg-opacity)] supports-[backdrop-filter]:bg-background/60"
-      )}
+      className="sticky top-14 z-40 w-full transition-all duration-100"
       style={{
-        '--tw-bg-opacity': opacity * 0.95,
-        backdropFilter: `blur(${opacity * 8}px)`,
-        WebkitBackdropFilter: `blur(${opacity * 8}px)` // Safari 支持
-      } as any}
+        background: `rgba(var(--background), ${opacity * 0.3})`,
+        backdropFilter: `blur(${opacity * 16}px)`,
+        WebkitBackdropFilter: `blur(${opacity * 16}px)`, // Safari 支持
+        borderColor: `rgba(255, 255, 255, ${opacity * 0.2})`
+      }}
     >
       <div className="w-full px-4 py-4">
         <div className="max-w-2xl mx-auto space-y-4">

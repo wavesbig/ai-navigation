@@ -10,6 +10,7 @@ import { prisma } from '@/lib/db';
 import { Analytics } from '@/components/analytics';
 import { Analytics as VercelAnalytics } from "@vercel/analytics/react"
 import { WebsiteSettings } from '@/lib/types';
+import { BackgroundEffects } from '@/components/background-effects';
 
 export async function generateMetadata(): Promise<Metadata> {
   try {
@@ -62,6 +63,7 @@ export default async function RootLayout({
             disableTransitionOnChange
           >
             <ThemeWrapper>
+              <BackgroundEffects />
               <Header />
               <main className="flex-1">
                 {children}
