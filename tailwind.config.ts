@@ -106,6 +106,16 @@ const config: Config = {
             transform: 'scale(1.2) translateX(20px) rotate(5deg)',
             opacity: '0.6'
           }
+        },
+        'aurora-optimized': {
+          '0%, 100%': {
+            transform: 'translateX(0) rotate(0)',
+            opacity: '0.6'
+          },
+          '50%': {
+            transform: 'translateX(10px) rotate(3deg)',
+            opacity: '0.4'
+          }
         }
       },
       animation: {
@@ -125,17 +135,21 @@ const config: Config = {
         "glow-line-horizontal": "glow-line-horizontal 3s ease-in-out infinite",
         "gradient-flow": "gradient-flow 15s ease infinite",
         "meteor": "meteor 10s linear infinite",
-        "aurora": "aurora 20s ease infinite"
+        "aurora": "aurora 20s ease infinite",
+        "aurora-optimized": "aurora-optimized 15s ease infinite"
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
         'gradient-conic': 'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
         'gradient-shine': 'linear-gradient(45deg, transparent 25%, rgba(var(--primary-rgb), 0.1) 50%, transparent 75%)',
-        'aurora-1': 'linear-gradient(to right, #4facfe 0%, #00f2fe 100%)',
-        'aurora-2': 'linear-gradient(135deg, #0FF0B3 0%, #036ED9 100%)',
-        'aurora-3': 'linear-gradient(to right, #8BC6EC 0%, #9599E2 100%)',
+        'soft-gradient': 'linear-gradient(130deg, #a8edea 0%, #fed6e3 50%, #c2ebff 100%)',
       },
       colors: {
+        'aurora-1-start': '#4facfe',
+        'aurora-1-end': '#00f2fe',
+        'soft-blue': '#a8edea',
+        'soft-pink': '#fed6e3',
+        'soft-sky': '#c2ebff',
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",

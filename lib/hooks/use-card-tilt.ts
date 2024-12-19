@@ -10,7 +10,7 @@ interface TiltOptions {
 export function useCardTilt(options: TiltOptions = {}) {
   const {
     maxTiltDegree = 20,
-    scale = 1.05,
+    scale = 1.03,
     perspective = 1000,
     transitionZ = 20,
   } = options;

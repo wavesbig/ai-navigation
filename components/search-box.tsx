@@ -80,21 +80,25 @@ export function SearchBox({ value, onChange, className }: SearchBoxProps) {
 
   return (
     <motion.div 
-      className={`relative group ${className}`}
+      className={`relative group max-w-2xl w-full mx-auto ${className}`}
       layout
     >
-      <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-primary/5 to-primary/10 rounded-lg blur-xl opacity-50 group-hover:opacity-75 transition-all duration-500" />
-      <div className="relative flex items-center gap-1">
+      {/* 搜索框背景光晕 */}
+      <div className="absolute inset-0 bg-gradient-to-r from-background/80 via-background/50 to-background/80 rounded-xl backdrop-blur-md" />
+      <div className="absolute inset-0 bg-gradient-to-r from-soft-blue/20 via-soft-pink/20 to-soft-sky/20 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+      
+      {/* 搜索框内容 */}
+      <div className="relative flex items-center gap-2 p-1.5">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
               variant="ghost"
               size="sm"
-              className="h-10 gap-2 px-3 hover:bg-transparent data-[state=open]:bg-muted/50"
+              className="h-9 gap-2 px-2.5 md:px-3 hover:bg-background/60 data-[state=open]:bg-background/60 rounded-lg transition-colors"
             >
               {selectedEngine.icon}
-              <span className="hidden sm:inline font-medium">{selectedEngine.name}</span>
-              <ChevronDown className="h-4 w-4 opacity-50" />
+              <span className="hidden sm:inline font-medium text-sm">{selectedEngine.name}</span>
+              <ChevronDown className="h-3.5 w-3.5 opacity-50" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="start" className="w-[150px]">
@@ -111,22 +115,22 @@ export function SearchBox({ value, onChange, className }: SearchBoxProps) {
           </DropdownMenuContent>
         </DropdownMenu>
 
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground/60 group-hover:text-primary/60 transition-colors duration-300" />
+        <div className="relative flex-1 min-w-0">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground/50 group-hover:text-muted-foreground/70 transition-colors duration-300" />
           <Input
             type="search"
             placeholder="搜索AI工具、教程、资源..."
             value={value}
             onChange={(e) => onChange(e.target.value)}
             onKeyPress={handleKeyPress}
-            className="w-full h-10 pl-10 pr-4 bg-background/60 backdrop-blur-xl border-primary/20 hover:border-primary/40 focus:border-primary transition-all duration-300"
+            className="w-full h-9 pl-9 pr-3 bg-transparent border-0 ring-1 ring-border/50 hover:ring-border focus:ring-2 focus:ring-primary/30 placeholder:text-muted-foreground/50 rounded-lg transition-all duration-300"
           />
         </div>
 
         <Button
           variant="default"
           size="sm"
-          className="h-10 px-4"
+          className="h-9 px-4 rounded-lg bg-primary/90 hover:bg-primary transition-colors shadow-sm"
           onClick={handleSearch}
         >
           搜索
