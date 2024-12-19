@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAtomValue, useAtom } from 'jotai';
-import { isAdminModeAtom, isCompactModeAtom, websitesAtom } from '@/lib/atoms';
+import { isAdminModeAtom, isCompactModeAtom, websitesAtom } from '@/lib/store';
 import { useToast } from '@/hooks/use-toast';
 import { WebsiteCard } from './website-card';
 import { CompactCard } from './compact-card';

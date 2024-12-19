@@ -3,7 +3,7 @@
 import { useAtom } from 'jotai';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react';
-import { selectedCategoryAtom } from '@/lib/atoms';
+import { selectedCategoryAtom } from '@/lib/store';
 import { Button } from './ui/button';
 import {
   DropdownMenu,
@@ -20,9 +20,10 @@ interface CategoryFilterProps {
 
 const buttonVariants = {
   active: {
-    scale: 1,
-    backgroundColor: 'var(--primary)',
-    color: 'var(--primary-foreground)',
+    scale: 1.05,
+    y: -1,
+    backgroundColor: 'rgba(var(--background), 0.8)',
+    color: 'hsl(var(--primary))',
     transition: {
       type: 'spring',
       stiffness: 500,
@@ -31,8 +32,9 @@ const buttonVariants = {
   },
   inactive: {
     scale: 1,
+    y: 0,
     backgroundColor: 'transparent',
-    color: 'var(--foreground)',
+    color: 'hsl(var(--muted-foreground))',
     transition: {
       type: 'spring',
       stiffness: 500,
@@ -50,13 +52,12 @@ export default function CategoryFilter({ categories }: CategoryFilterProps) {
   useEffect(() => {
     setMounted(true);
   }, []);
-
   const selectedCategoryName = selectedCategory
-    ? categories?.find(c => c.id === selectedCategory)?.name || '未知分类'
+    ? categories?.find(c => c.id === Number(selectedCategory))?.name || '未知分类'
     : '全部';
 
   const handleCategorySelect = (categoryId: number | null) => {
-    setSelectedCategory(categoryId);
+    setSelectedCategory(categoryId === null ? null : String(categoryId));
     if (categoryId !== null) {
       const index = categories.findIndex(c => c.id === categoryId);
       if (index !== -1) {
@@ -115,19 +116,32 @@ export default function CategoryFilter({ categories }: CategoryFilterProps) {
       <div className="md:hidden">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="w-full justify-between">
-              {selectedCategoryName}
-              <ChevronDown className="ml-2 h-4 w-4" />
+            <Button 
+              variant="outline" 
+              className="w-full justify-between bg-background/40 backdrop-blur-sm border-border/30 hover:bg-background/60 hover:border-border/50"
+            >
+              <span className={selectedCategory === null ? "text-primary" : "text-foreground/70"}>
+                {selectedCategoryName}
+              </span>
+              <ChevronDown className="ml-2 h-4 w-4 opacity-40" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-full min-w-[200px]">
-            <DropdownMenuItem onClick={() => handleCategorySelect(null)}>
+          <DropdownMenuContent className="w-[calc(100vw-2rem)] min-w-[200px] bg-background/60 backdrop-blur-md border-border/30">
+            <DropdownMenuItem 
+              onClick={() => handleCategorySelect(null)}
+              className={`${selectedCategory === null 
+                ? 'text-primary bg-primary/5' 
+                : 'text-foreground/70'} hover:text-foreground focus:text-foreground`}
+            >
               全部
             </DropdownMenuItem>
             {categories.map((category) => (
               <DropdownMenuItem
                 key={category.id}
                 onClick={() => handleCategorySelect(category.id)}
+                className={`${selectedCategory?.toString() === category.id.toString()
+                  ? 'text-primary bg-primary/5' 
+                  : 'text-foreground/70'} hover:text-foreground focus:text-foreground`}
               >
                 {category.name}
               </DropdownMenuItem>
@@ -139,11 +153,14 @@ export default function CategoryFilter({ categories }: CategoryFilterProps) {
       {/* Desktop: Horizontal Categories with Arrows */}
       <div className="hidden md:flex items-center justify-center gap-2">
         <AnimatePresence initial={false}>
-          <div className="flex items-center gap-2">
+          <div className="relative flex items-center gap-2">
+            {/* Background Effect */}
+            <div className="absolute inset-0 bg-gradient-to-r from-background/60 via-background/40 to-background/60 rounded-xl backdrop-blur-sm" />
+            
             <Button
               variant="ghost"
               size="icon"
-              className="h-8 w-8 bg-background/80 backdrop-blur-sm shrink-0"
+              className="relative h-8 w-8 text-muted-foreground hover:text-foreground hover:bg-background/40 disabled:opacity-20 transition-all z-10"
               onClick={() => canScrollLeft && handleScroll('left')}
               disabled={!canScrollLeft}
             >
@@ -152,7 +169,7 @@ export default function CategoryFilter({ categories }: CategoryFilterProps) {
 
             <div
               ref={containerRef}
-              className="flex items-center gap-2 overflow-hidden px-2"
+              className="relative flex items-center gap-2 overflow-hidden px-2 z-10"
             >
               {visibleCategories.map((category) => (
                 <motion.div
@@ -166,13 +183,17 @@ export default function CategoryFilter({ categories }: CategoryFilterProps) {
                   <motion.div
                     variants={buttonVariants}
                     animate={selectedCategory === category.id ? 'active' : 'inactive'}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
+                    whileHover={{ scale: 1.05, y: -1 }}
+                    whileTap={{ scale: 0.98, y: 1 }}
                   >
                     <Button
-                      variant={selectedCategory === category.id ? "default" : "outline"}
+                      variant="ghost"
                       onClick={() => handleCategorySelect(category.id)}
-                      className="h-8 px-4 text-sm whitespace-nowrap"
+                      className={`h-8 px-4 text-sm whitespace-nowrap transition-all duration-300
+                        ${selectedCategory === category.id 
+                          ? 'bg-background/80 text-primary shadow-[0_2px_8px_-2px_rgba(var(--primary),0.3)] backdrop-blur-sm' 
+                          : 'hover:bg-background/40 text-muted-foreground hover:text-foreground'
+                        }`}
                     >
                       {category.name}
                     </Button>
@@ -184,7 +205,7 @@ export default function CategoryFilter({ categories }: CategoryFilterProps) {
             <Button
               variant="ghost"
               size="icon"
-              className="h-8 w-8 bg-background/80 backdrop-blur-sm shrink-0"
+              className="relative h-8 w-8 text-muted-foreground hover:text-foreground hover:bg-background/40 disabled:opacity-20 transition-all z-10"
               onClick={() => canScrollRight && handleScroll('right')}
               disabled={!canScrollRight}
             >

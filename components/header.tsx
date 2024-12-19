@@ -22,7 +22,7 @@ import {
 } from 'lucide-react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
-import { searchQueryAtom, isAdminModeAtom, websitesAtom } from '@/lib/atoms';
+import { searchQueryAtom, isAdminModeAtom, websitesAtom } from '@/lib/store';
 import { ModeToggle } from './mode-toggle';
 import { Rankings } from './website/rankings';
 import {
@@ -229,7 +229,7 @@ export default function Header() {
                 </Button>
               </PopoverTrigger>
               <PopoverContent align="end" className="w-[400px] p-0">
-                <Rankings websites={websites} onVisit={handleVisit} />
+                <Rankings websites={websites as unknown as Website[]} onVisit={handleVisit} />
               </PopoverContent>
             </Popover>
 
@@ -309,7 +309,7 @@ export default function Header() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.2 }}
-            className="md:hidden absolute left-0 right-0 mt-2 mx-4 rounded-xl p-4 space-y-4 shadow-lg bg-background/90 backdrop-blur-xl border"
+            className="md:hidden absolute left-0 right-0 mt-2 mx-4 rounded-lg p-4 space-y-4 shadow-lg bg-background border"
           >
             <div className="flex flex-col gap-3">
               <motion.div 
@@ -318,10 +318,19 @@ export default function Header() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 }}
               >
-                <Link href="/rankings" className="w-full">
+                <Link href="/" className="w-full" onClick={() => setIsOpen(false)}>
                   <Button
                     variant="ghost"
-                    className="w-full justify-start hover:bg-primary/5 font-medium text-base rounded-lg h-12 transition-all duration-200 hover:scale-[1.02]"
+                    className="w-full justify-start font-medium text-base rounded-md h-12"
+                  >
+                    <Command className="h-5 w-5 mr-3 text-primary" />
+                    主页
+                  </Button>
+                </Link>
+                <Link href="/rankings" className="w-full" onClick={() => setIsOpen(false)}>
+                  <Button
+                    variant="ghost"
+                    className="w-full justify-start font-medium text-base rounded-md h-12"
                   >
                     <Trophy className="h-5 w-5 mr-3 text-primary" />
                     排行榜
@@ -330,17 +339,21 @@ export default function Header() {
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <Link href="/scripts/ai-nav-collector.user.js" className="w-full">
-                        <Button variant="ghost" className="w-full justify-start hover:bg-primary/5 font-medium text-base rounded-lg h-12 transition-all duration-200 hover:scale-[1.02]">
+                      <Link href="/scripts/ai-nav-collector.user.js" className="w-full" onClick={() => setIsOpen(false)}>
+                        <Button 
+                          variant="ghost" 
+                          className="w-full justify-start font-medium text-base rounded-md h-12"
+                        >
                           <Download className="h-5 w-5 mr-3 text-primary" />
                           安装脚本
                         </Button>
                       </Link>
                     </TooltipTrigger>
                     <TooltipContent 
-                      className="max-w-[300px] p-4 rounded-lg border shadow-lg bg-background/90 backdrop-blur-xl"
+                      side="bottom"
+                      className="max-w-[300px] p-4"
                     >
-                      <p className="font-medium mb-2 text-primary">AI导航助手脚本</p>
+                      <p className="font-medium mb-2">AI导航助手脚本</p>
                       <p className="text-sm text-muted-foreground leading-relaxed">功能：自动识别并采集当前网页的AI工具信息，快速提交到AI导航。</p>
                       <p className="text-sm text-muted-foreground mt-2 leading-relaxed">需要先安装 Tampermonkey 或 Violentmonkey 浏览器扩展。</p>
                     </TooltipContent>
@@ -354,16 +367,19 @@ export default function Header() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
               >
-                <Link href="/submit" className="w-full">
+                <Link href="/submit" className="w-full" onClick={() => setIsOpen(false)}>
                   <Button 
-                    className="w-full justify-start font-medium text-base rounded-lg h-12 bg-primary/10 hover:bg-primary/15 text-primary transition-all duration-200 hover:scale-[1.02]"
+                    className="w-full justify-start font-medium text-base rounded-md h-12"
                   >
                     <Plus className="h-5 w-5 mr-3" />
                     提交网站
                   </Button>
                 </Link>
-                <Link href="/about" className="w-full">
-                  <Button variant="ghost" className="w-full justify-start hover:bg-primary/5 font-medium text-base rounded-lg h-12 transition-all duration-200 hover:scale-[1.02]">
+                <Link href="/about" className="w-full" onClick={() => setIsOpen(false)}>
+                  <Button 
+                    variant="ghost" 
+                    className="w-full justify-start font-medium text-base rounded-md h-12"
+                  >
                     <Info className="h-5 w-5 mr-3 text-primary" />
                     关于
                   </Button>
@@ -373,7 +389,7 @@ export default function Header() {
               {isAdmin && (
                 <>
                   <motion.div 
-                    className="h-px my-1 bg-border/10"
+                    className="h-px my-1 bg-border"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: 0.3 }}
@@ -384,15 +400,18 @@ export default function Header() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.3 }}
                   >
-                    <Link href="/admin" className="w-full">
-                      <Button variant="ghost" className="w-full justify-start hover:bg-primary/5 font-medium text-base rounded-lg h-12 transition-all duration-200 hover:scale-[1.02]">
+                    <Link href="/admin" className="w-full" onClick={() => setIsOpen(false)}>
+                      <Button 
+                        variant="ghost" 
+                        className="w-full justify-start font-medium text-base rounded-md h-12"
+                      >
                         <Settings className="h-5 w-5 mr-3 text-primary" />
                         管理界面
                       </Button>
                     </Link>
                     <Button 
                       variant="ghost" 
-                      className="w-full justify-start font-medium text-base rounded-lg h-12 text-destructive hover:bg-destructive/5 transition-all duration-200 hover:scale-[1.02]"
+                      className="w-full justify-start font-medium text-base rounded-md h-12 text-destructive hover:text-destructive"
                       onClick={exitAdminMode}
                     >
                       <LogOut className="h-5 w-5 mr-3" />
@@ -403,7 +422,7 @@ export default function Header() {
               )}
 
               <motion.div 
-                className="h-px my-1 bg-border/10"
+                className="h-px my-1 bg-border"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.4 }}

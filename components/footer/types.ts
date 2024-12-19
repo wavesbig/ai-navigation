@@ -6,7 +6,7 @@ export interface FooterLink {
 export interface FooterSettings {
   links: FooterLink[];
   copyright: string;
-  icp: string;
+  icpBeian: string;
   customHtml: string;
 }
 

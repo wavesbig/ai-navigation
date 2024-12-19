@@ -81,49 +81,51 @@ export default function AboutPage() {
   return (
     <div className="min-h-screen bg-background/50 relative">
       {/* Hero Section */}
-      <section className="relative overflow-hidden border-b group">
-        <div className="container px-4 py-20 mx-auto text-center">
-          <div className="relative inline-block">
-            <Brain className="h-16 w-16 mx-auto text-primary mb-6 animate-float group-hover:scale-110 transition-transform duration-700" />
-            <div className="absolute inset-0 bg-primary/20 blur-2xl -z-10 animate-pulse [animation-duration:4s]" />
+      <section className="relative overflow-hidden border-b border-border/40">
+        <div className="container px-4 py-16 sm:py-24 mx-auto text-center">
+          <div className="relative inline-flex flex-col items-center">
+            <div className="relative">
+              <Brain className="h-14 w-14 sm:h-16 sm:w-16 text-primary animate-float" />
+              <div className="absolute inset-0 bg-primary/20 blur-2xl -z-10 animate-pulse [animation-duration:4s]" />
+            </div>
+            <div className="mt-8 sm:mt-10 space-y-4">
+              <h1 className="text-2xl sm:text-4xl md:text-5xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-br from-foreground to-foreground/70 animate-fade-up [animation-delay:400ms] px-4">
+                发现优质 AI 工具的最佳平台
+              </h1>
+              <p className="text-base sm:text-lg md:text-xl text-muted-foreground/90 max-w-2xl mx-auto animate-fade-up [animation-delay:800ms] leading-relaxed px-4">
+                AI导航致力于帮助用户发现、分享和收藏优质的AI工具与资源，让你的AI之旅更轻松。
+              </p>
+            </div>
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-6 animate-fade-up [animation-delay:400ms]">
-            发现优质 AI 工具的最佳平台
-          </h1>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto animate-fade-up [animation-delay:800ms] relative leading-relaxed">
-            <span className="relative inline-block">
-              AI导航致力于帮助用户发现、分享和收藏优质的AI工具与资源，让你的AI之旅更轻松。
-              <span className="absolute -right-6 -top-6">
-                <Sparkles className="h-5 w-5 text-primary animate-pulse [animation-duration:3s]" />
-              </span>
-            </span>
-          </p>
         </div>
-        {/* Background Grid */}
+        {/* Background Effect */}
         <div className="absolute inset-0 -z-10">
           <div className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/5 to-transparent animate-gradient-flow opacity-30" />
         </div>
       </section>
 
       {/* Features Section */}
-      <section className="container px-4 py-20 mx-auto relative overflow-hidden">
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <section className="container px-4 py-12 sm:py-20 mx-auto">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           {features.map((feature, index) => (
             <Card 
               key={index} 
-              className="bg-background/30 hover:shadow-xl transition-all duration-700 hover:-translate-y-2 animate-fade-up group relative overflow-hidden backdrop-blur-xl backdrop-saturate-150 border-white/20 dark:border-white/10"
+              className="group relative overflow-hidden backdrop-blur-sm border-border/30 bg-background/30 hover:shadow-lg transition-all duration-500 hover:-translate-y-1"
               style={{ animationDelay: `${(index + 1) * 200}ms` }}
             >
-              <div className="absolute inset-0 bg-gradient-shine opacity-0 group-hover:opacity-100 animate-background-shine" />
-              <CardContent className="p-6 relative">
-                <div className="text-primary mb-4 animate-bounce-subtle group-hover:scale-110 transition-transform duration-700">
-                  <div className="relative">
-                    {feature.icon}
-                    <div className="absolute inset-0 bg-primary/20 blur-lg -z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+              <CardContent className="p-5 sm:p-6">
+                <div className="flex sm:block items-center sm:items-start gap-4 sm:gap-0">
+                  <div className="flex-shrink-0 text-primary">
+                    <div className="relative inline-flex p-2 rounded-xl bg-primary/10 group-hover:bg-primary/15 transition-colors duration-500">
+                      {feature.icon}
+                      <div className="absolute inset-0 bg-primary/20 rounded-xl blur-md -z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                    </div>
+                  </div>
+                  <div className="min-w-0 sm:mt-4">
+                    <h3 className="text-base sm:text-lg font-semibold mb-1.5 sm:mb-2 group-hover:text-primary transition-colors duration-500">{feature.title}</h3>
+                    <p className="text-sm text-muted-foreground/80 group-hover:text-muted-foreground transition-colors duration-500 line-clamp-2 sm:line-clamp-none">{feature.description}</p>
                   </div>
                 </div>
-                <h3 className="text-lg font-semibold mb-2 group-hover:text-primary transition-colors duration-500">{feature.title}</h3>
-                <p className="text-sm text-muted-foreground/80 group-hover:text-muted-foreground transition-colors duration-500">{feature.description}</p>
               </CardContent>
             </Card>
           ))}
@@ -131,25 +133,29 @@ export default function AboutPage() {
       </section>
 
       {/* Steps Section */}
-      <section className="container px-4 py-20 mx-auto">
-        <div className="grid md:grid-cols-3 gap-8">
+      <section className="container px-4 py-12 sm:py-20 mx-auto">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8">
           {steps.map((step, index) => (
             <div 
               key={index} 
-              className="relative animate-fade-up group"
+              className="group relative p-5 sm:p-6 rounded-xl border border-border/30 bg-background/30 backdrop-blur-sm animate-fade-up hover:shadow-lg transition-all duration-500"
               style={{ animationDelay: `${(index + 1) * 300}ms` }}
             >
-              <div className="flex items-center gap-3 mb-4">
-                <div className="relative flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 text-primary animate-pulse [animation-duration:3s] group-hover:scale-110 transition-transform duration-700">
+              <div className="flex items-start gap-4 mb-4">
+                <div className="flex-shrink-0 relative flex items-center justify-center w-10 h-10 rounded-xl bg-primary/10 text-primary group-hover:bg-primary/15 transition-colors duration-500">
                   {step.icon}
-                  <div className="absolute inset-0 bg-primary/20 rounded-full blur-md -z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+                  <div className="absolute inset-0 bg-primary/20 rounded-xl blur-md -z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                 </div>
-                <h3 className="text-lg font-semibold group-hover:text-primary transition-colors duration-500">{step.title}</h3>
+                <div className="min-w-0">
+                  <h3 className="text-base sm:text-lg font-semibold group-hover:text-primary transition-colors duration-500">{step.title}</h3>
+                  <p className="mt-1.5 text-sm text-muted-foreground/80 group-hover:text-muted-foreground transition-colors duration-500">{step.description}</p>
+                </div>
               </div>
-              <p className="text-muted-foreground/80 mb-4 group-hover:text-muted-foreground transition-colors duration-500">{step.description}</p>
-              {step.action}
+              <div className="ml-14">
+                {step.action}
+              </div>
               {index < steps.length - 1 && (
-                <div className="hidden md:block absolute top-4 left-[calc(100%+1rem)] w-8 border-t border-dashed border-border animate-border-flow overflow-hidden">
+                <div className="hidden md:block absolute top-1/2 left-[calc(100%+0.5rem)] w-4 border-t border-dashed border-border/50">
                   <div className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/30 to-transparent animate-glow-line-horizontal" />
                 </div>
               )}
@@ -159,26 +165,24 @@ export default function AboutPage() {
       </section>
 
       {/* Contact Section */}
-      <section className="container px-4 py-20 mx-auto text-center border-t animate-fade-up group relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-shine opacity-0 group-hover:opacity-100 animate-background-shine" />
-        <h2 className="text-2xl font-bold mb-6 group-hover:text-primary transition-colors duration-500 relative">
-          加入我们
-          <span className="absolute -right-6 -top-6">
-            <Sparkles className="h-5 w-5 text-primary animate-pulse [animation-duration:3s]" />
-          </span>
-        </h2>
-        <p className="text-muted-foreground/80 mb-8 max-w-2xl mx-auto group-hover:text-muted-foreground transition-colors duration-500">
-          我们欢迎各种形式的贡献，无论是提交新的AI工具、改进网站功能，还是提供建议和反馈。
-        </p>
-        <a 
-          href="https://github.com/liyown/ai-navigation" 
-          target="_blank" 
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 text-primary hover:text-primary/80 transition-colors group relative"
-        >
-          <span>访问 GitHub 仓库</span>
-          <ExternalLink className="h-4 w-4 transition-transform group-hover:translate-x-1 duration-500" />
-        </a>
+      <section className="container px-4 py-16 sm:py-24 mx-auto text-center border-t border-border/40">
+        <div className="max-w-2xl mx-auto">
+          <h2 className="text-xl sm:text-2xl font-bold mb-6 sm:mb-8">
+            加入我们
+          </h2>
+          <p className="text-base text-muted-foreground/90 mb-8 sm:mb-10 px-4">
+            我们欢迎各种形式的贡献，无论是提交新的AI工具、改进网站功能，还是提供建议和反馈。
+          </p>
+          <a 
+            href="https://github.com/liyown/ai-navigation" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 px-6 py-2.5 rounded-lg bg-primary/10 hover:bg-primary/15 text-primary transition-colors duration-500 group"
+          >
+            <span className="text-sm sm:text-base font-medium">访问 GitHub 仓库</span>
+            <ExternalLink className="h-4 w-4 transition-transform group-hover:translate-x-1 duration-500" />
+          </a>
+        </div>
       </section>
     </div>
   );

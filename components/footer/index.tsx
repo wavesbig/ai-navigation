@@ -33,7 +33,7 @@ export async function Footer() {
   const footerSettings: FooterSettings = {
     links: footerLinks,
     copyright: settingsMap[WebsiteSettings.siteCopyright] || '© 2024 AI导航',
-    icp: settingsMap[WebsiteSettings.siteIcp] || '',
+    icpBeian: settingsMap[WebsiteSettings.siteIcp] || '',
     customHtml: settingsMap[WebsiteSettings.customHtml] || ''
   };
 

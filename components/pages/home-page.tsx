@@ -3,12 +3,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { useAtom } from 'jotai';
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
-import { 
-  websitesAtom, 
-  categoriesAtom, 
-  searchQueryAtom, 
-  selectedCategoryAtom 
-} from '@/lib/atoms';
+import { websitesAtom } from '@/lib/store';
+import { categoriesAtom, searchQueryAtom, selectedCategoryAtom } from '@/lib/store';
 import WebsiteGrid from '@/components/website/website-grid';
 import { PersistentHeader } from '@/components/persistent-header';
 import { Typewriter } from '@/components/typewriter';
@@ -37,11 +33,11 @@ export default function HomePage({ initialWebsites, initialCategories }: HomePag
   const heroScale = useTransform(scrollY, [0, 400], [1, 0.9]);
   const heroTranslateY = useTransform(scrollY, [0, 400], [0, -100]);
   const isScrolled = useTransform(scrollY, (value) => value > 300);
-  const [filteredWebsites, setFilteredWebsites] = useState<Website[]>(initialWebsites);
+  const [filteredWebsites, setFilteredWebsites] = useState<Website[]>([]);
 
   // 初始化数据
   useEffect(() => {
-    setWebsites(initialWebsites);
+    setWebsites(initialWebsites as any);
     setCategories(initialCategories);
   }, [initialWebsites, initialCategories, setWebsites, setCategories]);
 
@@ -56,12 +52,12 @@ export default function HomePage({ initialWebsites, initialCategories }: HomePag
         website.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         website.description.toLowerCase().includes(searchQuery.toLowerCase());
 
-      const matchesCategory = !selectedCategory || website.category_id === selectedCategory;
+      const matchesCategory = !selectedCategory || website.category_id === Number(selectedCategory);
 
       return matchesSearch && matchesCategory;
     });
 
-    setFilteredWebsites(filtered);
+    setFilteredWebsites(filtered as any);
   }, [websites, searchQuery, selectedCategory]);
 
   // 处理主题切换
@@ -155,10 +151,10 @@ export default function HomePage({ initialWebsites, initialCategories }: HomePag
             ))}
           </AnimatePresence>
 
-          <div className="max-w-4xl mx-auto text-center space-y-8">
+          <div className="max-w-4xl mx-auto text-center space-y-6 sm:space-y-8 px-4">
             {/* Title */}
-            <motion.div className="space-y-4">
-              <div className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight">
+            <motion.div className="space-y-3 sm:space-y-4">
+              <div className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight leading-tight sm:leading-normal">
                 <WaveText className="text-primary">
                   发现探索AI新世界的乐趣
                 </WaveText>
@@ -167,6 +163,7 @@ export default function HomePage({ initialWebsites, initialCategories }: HomePag
                 initial={false} 
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.8, delay: 0.4 }}
+                className="max-w-2xl mx-auto text-base sm:text-lg md:text-xl text-muted-foreground/90"
               >
                 <Typewriter 
                   text="发现、分享和收藏优质AI工具与资源，让你的人工智能生活更美好"

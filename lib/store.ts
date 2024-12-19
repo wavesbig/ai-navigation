@@ -8,6 +8,7 @@ export const categoriesAtom = atom<Category[]>([]);
 // 搜索和过滤
 export const searchQueryAtom = atom('');
 export const selectedCategoryAtom = atom<string | null>(null);
+export const isCompactModeAtom = atom(false);
 
 // 主题设置
 export const themeSettingsAtom = atom({
@@ -31,4 +32,5 @@ export const footerSettingsAtom = atom({
   copyright: '',
   icpBeian: '',
   links: [] as { name: string; url: string }[],
+  customHtml: '',
 });

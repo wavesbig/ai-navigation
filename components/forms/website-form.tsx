@@ -6,7 +6,7 @@ import { motion } from 'framer-motion';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useAtom } from 'jotai';
-import { categoriesAtom, isAdminModeAtom } from '@/lib/atoms';
+import { categoriesAtom, isAdminModeAtom } from '@/lib/store';
 import { fetchMetadata } from '@/lib/metadata';
 import { websiteFormSchema } from '@/lib/validations';
 import { FormField } from './form-field';
@@ -137,6 +137,7 @@ export function WebsiteForm() {
 
   return (
     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+      {/* URL Input Group */}
       <div className="space-y-4">
         <FormField
           label="网站地址"
@@ -149,63 +150,99 @@ export function WebsiteForm() {
           variant="outline"
           onClick={fetchWebsiteMetadata}
           disabled={!isValidUrl || isFetching || isSubmitting}
-          className="w-full"
+          className="w-full bg-background/50 backdrop-blur-sm border-border/40 hover:bg-background/70 hover:border-border/60 transition-all duration-300"
         >
           {isFetching ? '获取中...' : '自动获取网站信息'}
         </Button>
       </div>
 
-      <FormField
-        label="网站标题"
-        name="title"
-        form={form}
-        placeholder="输入网站标题"
-      />
+      {/* Basic Info */}
+      <motion.div 
+        className="space-y-4"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.1 }}
+      >
+        <FormField
+          label="网站标题"
+          name="title"
+          form={form}
+          placeholder="输入网站标题"
+        />
 
-      <FormField
-        label="网站描述"
-        name="description"
-        form={form}
-        placeholder="描述这个网站"
-        textarea
-      />
+        <FormField
+          label="网站描述"
+          name="description"
+          form={form}
+          placeholder="描述这个网站"
+          textarea
+        />
+      </motion.div>
 
-      <div>
-        <label className="block text-sm font-medium mb-2">
+      {/* Category Selection */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.2 }}
+      >
+        <label className="block text-sm font-medium mb-2 text-foreground/80">
           分类
         </label>
         <Select
           onValueChange={(value) => setValue('category_id', value)}
           disabled={isSubmitting}
         >
-          <SelectTrigger className="w-full">
+          <SelectTrigger className="w-full bg-background/50 backdrop-blur-sm border-border/40 hover:bg-background/70 hover:border-border/60 transition-all duration-300">
             <SelectValue placeholder="选择分类" />
           </SelectTrigger>
-          <SelectContent>
-            {categories.map((category) => (
-              <SelectItem key={category.id} value={category.id.toString()}>
+          <SelectContent className="bg-background/80 backdrop-blur-md border-border/30">
+            {categories.map((category: { id: number; name: string }) => (
+              <SelectItem 
+                key={category.id} 
+                value={category.id.toString()}
+                className="hover:bg-primary/10 focus:bg-primary/10"
+              >
                 {category.name}
               </SelectItem>
             ))}
           </SelectContent>
         </Select>
         {form.formState.errors.category_id && (
-          <p className="text-sm text-red-500 mt-1">
+          <p className="text-sm text-red-500/70 mt-1">
             请选择网站分类
           </p>
         )}
-      </div>
+      </motion.div>
 
-      <FormField
-        label="缩略图地址（可选）"
-        name="thumbnail"
-        form={form}
-        placeholder="https://example.com/thumbnail.jpg"
-      />
+      {/* Thumbnail URL */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.3 }}
+      >
+        <FormField
+          label="缩略图地址（可选）"
+          name="thumbnail"
+          form={form}
+          placeholder="https://example.com/thumbnail.jpg"
+        />
+      </motion.div>
 
-      <Button type="submit" disabled={isSubmitting} className="w-full">
-        {isSubmitting ? '提交中...' : '提交网站'}
-      </Button>
+      {/* Submit Button */}
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.4 }}
+        className="pt-4"
+      >
+        <Button 
+          type="submit" 
+          disabled={isSubmitting} 
+          className="w-full h-11 bg-primary/90 hover:bg-primary text-primary-foreground shadow-[0_2px_10px_-3px_rgba(var(--primary),0.3)] transition-all duration-300"
+        >
+          {isSubmitting ? '提交中...' : '提交网站'}
+        </Button>
+      </motion.div>
     </form>
   );
 }

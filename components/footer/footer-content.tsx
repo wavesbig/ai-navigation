@@ -5,7 +5,7 @@ import { useAtom } from 'jotai';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
-import { isAdminModeAtom, footerSettingsAtom } from '@/lib/atoms';
+import { isAdminModeAtom, footerSettingsAtom } from '@/lib/store';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
@@ -18,9 +18,17 @@ export default function FooterContent({ initialSettings }: FooterContentProps) {
   const [newLink, setNewLink] = useState({ title: '', url: '' });
   const { toast } = useToast();
 
-  // 初始化设置
+  // Initialize settings
   useEffect(() => {
-    setSettings(initialSettings);
+    setSettings({
+      copyright: initialSettings.copyright || '',
+      icpBeian: initialSettings.icpBeian || '',
+      links: initialSettings.links?.map(link => ({
+        name: link.title,
+        url: link.url
+      })) || [],
+      customHtml: initialSettings.customHtml || ''
+    });
   }, [initialSettings, setSettings]);
 
   const handleAddLink = async () => {
@@ -46,7 +54,7 @@ export default function FooterContent({ initialSettings }: FooterContentProps) {
 
       setSettings(prev => ({
         ...prev,
-        links: [...prev.links, newLink],
+        links: [...prev.links, { name: newLink.title, url: newLink.url }],
       }));
 
       setNewLink({ title: '', url: '' });
@@ -95,27 +103,27 @@ export default function FooterContent({ initialSettings }: FooterContentProps) {
     <motion.footer 
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="w-full border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
+      className="w-full border-t bg-white/80 dark:bg-gray-950/90 backdrop-blur-sm"
     >
       <div className="container mx-auto px-4 py-4">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-          <div className="flex flex-wrap items-center gap-4">
+        <div className="flex flex-col space-y-2 md:space-y-0 md:flex-row md:items-center md:justify-between">
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
             {settings.links.length > 0 ? (
               settings.links.map((link, index) => (
-                <div key={index} className="flex items-center gap-2">
+                <div key={index} className="flex items-center gap-1.5">
                   <a 
                     href={link.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                    className="text-xs text-muted-foreground hover:text-foreground transition-colors"
                   >
-                    {link.title}
+                    {link.name}
                   </a>
                   {isAdmin && (
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="h-6 w-6 p-0 hover:bg-destructive/10 hover:text-destructive"
+                      className="h-5 w-5 p-0 hover:bg-destructive/10 hover:text-destructive rounded-full"
                       onClick={() => handleRemoveLink(index)}
                     >
                       ×
@@ -124,7 +132,7 @@ export default function FooterContent({ initialSettings }: FooterContentProps) {
                 </div>
               ))
             ) : (
-              <div className="text-sm text-muted-foreground/60 italic">
+              <div className="text-xs text-muted-foreground/60 italic">
                 {isAdmin ? '点击右侧加号添加页脚链接' : '暂无页脚链接'}
               </div>
             )}
@@ -132,15 +140,15 @@ export default function FooterContent({ initialSettings }: FooterContentProps) {
               <Button
                 variant="ghost"
                 size="sm"
-                className="h-7 px-2 hover:bg-primary/10 hover:text-primary"
+                className="h-5 w-5 p-0 hover:bg-primary/10 hover:text-primary rounded-full"
                 onClick={() => setIsDialogOpen(true)}
               >
-                <Plus className="h-4 w-4" />
+                <Plus className="h-3 w-3" />
               </Button>
             )}
           </div>
           
-          <div className="flex items-center gap-4 text-sm text-muted-foreground shrink-0">
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
             <a
               href="https://github.com/liyown/ai-navigation"
               target="_blank"
@@ -149,20 +157,24 @@ export default function FooterContent({ initialSettings }: FooterContentProps) {
             >
               {settings.copyright}
             </a>
-            <span className="text-muted-foreground/60">|</span>
-            <a 
-              href="https://beian.miit.gov.cn/"
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="hover:text-foreground transition-colors"
-            >
-              {settings.icp}
-            </a>
+            {settings.icpBeian && (
+              <>
+                <span className="hidden md:inline text-muted-foreground/60">|</span>
+                <a 
+                  href="https://beian.miit.gov.cn/"
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="hover:text-foreground transition-colors"
+                >
+                  {settings.icpBeian}
+                </a>
+              </>
+            )}
           </div>
         </div>
         {settings.customHtml && (
           <div 
-            className="mt-4 text-sm text-muted-foreground"
+            className="mt-2 text-xs text-muted-foreground"
             dangerouslySetInnerHTML={{ __html: settings.customHtml }}
           />
         )}

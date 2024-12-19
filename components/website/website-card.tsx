@@ -6,7 +6,7 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ExternalLink, ThumbsUp, ThumbsDown, Globe, ArrowUpRight, Heart } from 'lucide-react';
-import { themeSettingsAtom } from '@/lib/atoms';
+import { themeSettingsAtom } from '@/lib/store';
 import { cn } from '@/lib/utils';
 import { cardHoverVariants, sharedLayoutTransition } from '@/lib/animations';
 import type { Website, Category } from '@/lib/types';

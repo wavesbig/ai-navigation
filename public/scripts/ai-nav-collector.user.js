@@ -97,6 +97,7 @@
             box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
             transform: translateY(20px);
             transition: all 0.3s ease;
+            -webkit-overflow-scrolling: touch;
         }
 
         .ai-nav-modal.show .ai-nav-modal-content {
@@ -236,16 +237,113 @@
         @media (max-width: 768px) {
             .ai-nav-collector {
                 bottom: 80px;
+                right: 16px;
             }
+            
             .ai-nav-btn {
                 padding: 12px;
                 border-radius: 50%;
+                width: 48px;
+                height: 48px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
             }
+            
+            .ai-nav-btn svg {
+                width: 20px;
+                height: 20px;
+            }
+            
             .ai-nav-btn span {
                 display: none;
             }
+            
             .ai-nav-modal-content {
-                padding: 20px;
+                padding: 16px;
+                width: 100%;
+                max-width: none;
+                border-radius: 16px 16px 0 0;
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                max-height: 85vh;
+                transform: translateY(100%);
+            }
+            
+            .ai-nav-modal.show .ai-nav-modal-content {
+                transform: translateY(0);
+            }
+            
+            .ai-nav-modal-close {
+                top: 16px;
+                right: 16px;
+            }
+            
+            .ai-nav-categories {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 8px;
+            }
+            
+            .ai-nav-category {
+                padding: 10px;
+                font-size: 13px;
+                height: 40px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            
+            .ai-nav-input {
+                font-size: 16px;
+                padding: 10px;
+            }
+            
+            .ai-nav-submit {
+                padding: 14px;
+                margin-top: 16px;
+                position: sticky;
+                bottom: 0;
+                background: #0070f3;
+                border-radius: 12px;
+                box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.1);
+            }
+            
+            .ai-nav-form-group {
+                margin-bottom: 12px;
+            }
+            
+            .ai-nav-label {
+                font-size: 13px;
+                margin-bottom: 6px;
+            }
+            
+            .ai-nav-btn:active,
+            .ai-nav-category:active,
+            .ai-nav-submit:active {
+                opacity: 0.7;
+            }
+            
+            @media (prefers-color-scheme: dark) {
+                .ai-nav-modal-content {
+                    border-top: 1px solid #333;
+                }
+                
+                .ai-nav-submit {
+                    background: #0070f3;
+                    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.2);
+                }
+            }
+            
+            @supports (padding-bottom: env(safe-area-inset-bottom)) {
+                .ai-nav-modal-content {
+                    padding-bottom: calc(env(safe-area-inset-bottom) + 16px);
+                }
+                
+                .ai-nav-collector {
+                    bottom: calc(80px + env(safe-area-inset-bottom));
+                }
             }
         }
 
@@ -321,6 +419,89 @@
                 color: #999;
             }
         }
+
+        /* 自定义通知样式 */
+        .ai-nav-notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 12px 20px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            z-index: 10001;
+            max-width: 300px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            transform: translateX(120%);
+            transition: transform 0.3s ease;
+            font-family: system-ui, -apple-system, sans-serif;
+        }
+
+        .ai-nav-notification.show {
+            transform: translateX(0);
+        }
+
+        .ai-nav-notification-icon {
+            flex-shrink: 0;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .ai-nav-notification-content {
+            flex-grow: 1;
+        }
+
+        .ai-nav-notification-title {
+            font-weight: 600;
+            font-size: 14px;
+            margin: 0 0 4px;
+            color: #333;
+        }
+
+        .ai-nav-notification-text {
+            font-size: 13px;
+            color: #666;
+            margin: 0;
+            line-height: 1.4;
+        }
+
+        .ai-nav-notification.success .ai-nav-notification-icon {
+            color: #10B981;
+        }
+
+        .ai-nav-notification.error .ai-nav-notification-icon {
+            color: #EF4444;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .ai-nav-notification {
+                background: #1a1a1a;
+            }
+            .ai-nav-notification-title {
+                color: #fff;
+            }
+            .ai-nav-notification-text {
+                color: #999;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .ai-nav-notification {
+                top: auto;
+                bottom: 90px;
+                left: 20px;
+                right: 20px;
+                transform: translateY(120%);
+            }
+            .ai-nav-notification.show {
+                transform: translateY(0);
+            }
+        }
     `;
 
     // 工具函数
@@ -359,10 +540,10 @@
                                     document.querySelector('meta[name="twitter:image"]');
                 if (thumbnailMeta) {
                     metadata.thumbnail = thumbnailMeta.getAttribute('content');
-                    console.log('找到��面缩略图:', metadata.thumbnail);
+                    console.log('找到面缩略图:', metadata.thumbnail);
                 }
 
-                // 获取网站图标
+                // 获取网站���标
                 const iconLinks = [
                     // 优先获取高清图标
                     ...Array.from(document.querySelectorAll('link[rel="icon"][sizes="32x32"], link[rel="icon"][sizes="48x48"], link[rel="icon"][sizes="64x64"]')),
@@ -449,7 +630,7 @@
                             if (result.success) {
                                 resolve(result.data || []);
                             } else {
-                                reject(result.message || '获取���类失败');
+                                reject(result.message || '获取分类失败');
                             }
                         } catch (error) {
                             console.error('解析分类列表失败:', error);
@@ -467,18 +648,63 @@
         // 显示通知
         notify(title, text, type = 'success') {
             console.log(`显示通知: ${title} - ${text} (${type})`);
-            GM_notification({
-                title,
-                text,
-                timeout: 5000,  // 增加显示时间到 5 秒
-                onclick: () => {
-                    console.log('通知被点击');
-                    if (type === 'error') {
-                        // 如果是错误通知，点击时打开控制台
-                        console.log('详细错误信息:', text);
-                    }
+            
+            // 检测是否为移动设备
+            const isMobile = window.innerWidth <= 768;
+            
+            // 在移动端优先使用自定义通知，在桌面端优先使用 GM_notification
+            if (!isMobile && typeof GM_notification !== 'undefined') {
+                try {
+                    GM_notification({
+                        title,
+                        text,
+                        timeout: 5000,
+                        onclick: () => {
+                            console.log('通知被点击');
+                            if (type === 'error') {
+                                console.log('详细错误信息:', text);
+                            }
+                        }
+                    });
+                    return;
+                } catch (error) {
+                    console.log('GM_notification 不可用，使用自定义通知');
                 }
-            });
+            }
+
+            // 使用自定义通知
+            const notification = document.createElement('div');
+            notification.className = `ai-nav-notification ${type}`;
+            
+            const icon = type === 'success' 
+                ? '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>'
+                : '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>';
+            
+            notification.innerHTML = `
+                <div class="ai-nav-notification-icon">${icon}</div>
+                <div class="ai-nav-notification-content">
+                    <h4 class="ai-nav-notification-title">${title}</h4>
+                    <p class="ai-nav-notification-text">${text}</p>
+                </div>
+            `;
+
+            // 移除可能存在的旧通知
+            const existingNotifications = document.querySelectorAll('.ai-nav-notification');
+            existingNotifications.forEach(n => n.remove());
+
+            document.body.appendChild(notification);
+            
+            // 强制重绘以触发动画
+            notification.offsetHeight;
+            notification.classList.add('show');
+
+            // 5秒后移除通知
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => {
+                    notification.remove();
+                }, 300);
+            }, 5000);
         },
 
         // 添加样式
@@ -574,7 +800,6 @@
                 this.categories = await utils.getCategories();
                 console.log('分类加载完成:', this.categories);
                 this.renderCategories();
-                utils.notify('准备就绪 ✨', '点击收藏按钮开始使用');
             } catch (error) {
                 console.error('加载分类失败:', error);
                 utils.notify('初始化失败', error, 'error');
