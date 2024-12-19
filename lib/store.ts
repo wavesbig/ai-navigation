@@ -1,4 +1,5 @@
 import { atom } from 'jotai';
+import { atomWithStorage } from 'jotai/utils';
 import type { Website, Category } from './types';
 
 // 网站数据
@@ -8,7 +9,7 @@ export const categoriesAtom = atom<Category[]>([]);
 // 搜索和过滤
 export const searchQueryAtom = atom('');
 export const selectedCategoryAtom = atom<string | null>(null);
-export const isCompactModeAtom = atom(false);
+export const isCompactModeAtom = atomWithStorage('isCompactMode', false);
 
 // 主题设置
 export const themeSettingsAtom = atom({

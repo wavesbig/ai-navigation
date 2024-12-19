@@ -5,10 +5,8 @@ import { AjaxResponse } from "@/lib/types";
 const prisma = new PrismaClient();
 
 // POST /api/websites/[id]/visit
-export async function POST(
-  request: Request,
-  { params }: { params: { id: string } }
-) {
+export async function POST(request: Request, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     const websiteId = parseInt(params.id);
     if (isNaN(websiteId)) {

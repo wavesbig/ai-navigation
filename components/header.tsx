@@ -191,34 +191,36 @@ export default function Header() {
     >
       <nav className="container mx-auto px-4 h-14">
         <div className="flex h-full items-center justify-between gap-4">
-          {/* Logo and Title */}
-          <Link 
-            href="/" 
-            className="flex items-center gap-2 hover:opacity-80 transition-opacity"
-            onClick={handleTitleClick}
-          >
-            <Brain className="h-6 w-6 text-primary" />
+          <div className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+            {/* Logo and Title */}
+            <Link 
+              href="/"
+            >
+              <Brain className="h-6 w-6 text-primary" />
+            </Link>
             <motion.div
               variants={textContainerVariants}
               initial="initial"
               whileHover="hover"
               className="flex items-center gap-0.5"
+          >
+            <motion.span className="font-bold">AI Nav</motion.span>
+            <motion.span
+              onClick={handleTitleClick}
+              className="bg-clip-text text-transparent bg-gradient-to-r from-primary via-primary/80 to-primary/60 px-1.5 origin-center font-medium font-serif italic"
+              style={{
+                textShadow: "0 0 2px rgba(var(--primary), 0.15), 0 0 1px rgba(var(--primary), 0.1)",
+                letterSpacing: "0.08em",
+                fontWeight: 500,
+                WebkitFontSmoothing: "antialiased"
+              }}
             >
-              <motion.span className="font-bold">AI Nav</motion.span>
-              <motion.span
-                className="bg-clip-text text-transparent bg-gradient-to-r from-primary via-primary/80 to-primary/60 px-1.5 origin-center font-medium font-serif italic"
-                style={{
-                  textShadow: "0 0 2px rgba(var(--primary), 0.15), 0 0 1px rgba(var(--primary), 0.1)",
-                  letterSpacing: "0.08em",
-                  fontWeight: 500,
-                  WebkitFontSmoothing: "antialiased"
-                }}
-              >
-                探索AI新世界
-              </motion.span>
-            </motion.div>
-          </Link>
+              探索AI新世界
+            </motion.span>
+          </motion.div>
 
+          </div>
+          
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-4">
             <Popover open={showRankings && !isMobile} onOpenChange={setShowRankings}>

@@ -20,9 +20,9 @@ interface CategoryFilterProps {
 
 const buttonVariants = {
   active: {
-    scale: 1.05,
+    scale: 1.08,
     y: -1,
-    backgroundColor: 'rgba(var(--background), 0.8)',
+    backgroundColor: 'rgb(255, 255, 255)',
     color: 'hsl(var(--primary))',
     transition: {
       type: 'spring',
@@ -190,8 +190,9 @@ export default function CategoryFilter({ categories }: CategoryFilterProps) {
                       variant="ghost"
                       onClick={() => handleCategorySelect(category.id)}
                       className={`h-8 px-4 text-sm whitespace-nowrap transition-all duration-300
-                        ${selectedCategory === category.id 
-                          ? 'bg-background/80 text-primary shadow-[0_2px_8px_-2px_rgba(var(--primary),0.3)] backdrop-blur-sm' 
+                        ${(category.id === null && selectedCategory === null) || 
+                          (category.id !== null && selectedCategory === category.id.toString())
+                          ? 'bg-white text-primary font-medium shadow-[0_2px_12px_-2px_rgba(0,0,0,0.2)] scale-108' 
                           : 'hover:bg-background/40 text-muted-foreground hover:text-foreground'
                         }`}
                     >

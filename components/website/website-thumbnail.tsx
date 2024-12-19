@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils';
 
 interface WebsiteThumbnailProps {
   url: string;
-  thumbnail?: string;
+  thumbnail: string | null;
   title: string;
   className?: string;
 }

@@ -42,10 +42,10 @@ export function PersistentHeader({
     <div 
       className="sticky top-14 z-40 w-full transition-all duration-100"
       style={{
-        background: `rgba(var(--background), ${opacity * 0.3})`,
-        backdropFilter: `blur(${opacity * 16}px)`,
-        WebkitBackdropFilter: `blur(${opacity * 16}px)`, // Safari 支持
-        borderColor: `rgba(255, 255, 255, ${opacity * 0.2})`
+        background: `rgba(var(--background), ${opacity * 0.8})`,
+        backdropFilter: `blur(${opacity * 8}px)`,
+        WebkitBackdropFilter: `blur(${opacity * 8}px)`, // Safari 支持
+        borderBottom: opacity > 0 ? '1px solid rgba(var(--border), 0.1)' : 'none'
       }}
     >
       <div className="w-full px-4 py-4">

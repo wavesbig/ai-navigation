@@ -33,20 +33,20 @@ export interface Website {
   url: string;
   description: string;
   category_id: number;
-  thumbnail?: string;
-  status: "pending" | "approved" | "rejected" | "all";
+  thumbnail: string | null;
+  status: string;
   visits: number;
   likes: number;
-  created_at: string;
-  updated_at: string;
+  created_at: Date;
+  updated_at: Date;
 }
 
 export interface Category {
   id: number;
   name: string;
   slug: string;
-  created_at: string;
-  updated_at: string;
+  created_at: Date;
+  updated_at: Date;
 }
 
 export interface FormInputs {
@@ -72,7 +72,7 @@ export interface Settings {
   id: number;
   key: string;
   value: string;
-  updated_at: string;
+  updated_at: Date;
 }
 
 export interface Setting {

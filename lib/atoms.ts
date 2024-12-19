@@ -3,8 +3,7 @@ import { atomWithStorage } from 'jotai/utils';
 import type { Website, Category } from './types';
 
 // 使用 atomWithStorage 来持久化存储设置
-export const websitesAtom = atom<Website[]>([]);
-export const categoriesAtom = atom<Category[]>([]);
+export const websitesAtom = atom<Website[]>([]);export const categoriesAtom = atom<Category[]>([]);
 export const searchQueryAtom = atom('');
 export const selectedCategoryAtom = atom<number | null>(null);
 export const isAdminModeAtom = atomWithStorage('isAdminMode', false);

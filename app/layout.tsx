@@ -10,7 +10,6 @@ import { prisma } from '@/lib/db';
 import { Analytics } from '@/components/analytics';
 import { Analytics as VercelAnalytics } from "@vercel/analytics/react"
 import { WebsiteSettings } from '@/lib/types';
-import { BackgroundEffects } from '@/components/background-effects';
 
 export async function generateMetadata(): Promise<Metadata> {
   try {
@@ -25,7 +24,7 @@ export async function generateMetadata(): Promise<Metadata> {
       title: settingsMap.title || 'AI导航',
       description: settingsMap.description || '发现、分享和收藏优质AI工具与资源，让你的人工智能生活更美好',
       icons: {
-        icon: '/logo.png',
+        icon: settingsMap.logo || '/logo.png',
       },
       keywords: ['AI导航', 'AI工具', '人工智能', 'AI资源', 'AI网站导航'],
     };
@@ -35,14 +34,12 @@ export async function generateMetadata(): Promise<Metadata> {
       title: 'AI导航',
       description: '发现、分享和收藏优质AI工具与资源，让你的人工智能生活更美好',
       icons: {
-        icon: 'static/logo.png',
+        icon: '/public/logo.png',
       },
       keywords: ['AI导航', 'AI工具', '人工智能', 'AI资源', 'AI网站导航'],
     };
   }
 }
-
-
 
 export default async function RootLayout({
   children,
@@ -54,7 +51,7 @@ export default async function RootLayout({
 
   return (
     <html lang="zh-CN" suppressHydrationWarning >
-      <body suppressHydrationWarning className="min-h-screen flex flex-col">
+      <body suppressHydrationWarning className="min-h-screen flex flex-col bg-gradient-to-br from-blue-50/50 via-background to-purple-50/50 dark:from-blue-950/10 dark:via-background dark:to-purple-950/10">
         <StoreProvider>
           <ThemeProvider
             attribute="class"
@@ -63,7 +60,6 @@ export default async function RootLayout({
             disableTransitionOnChange
           >
             <ThemeWrapper>
-              <BackgroundEffects />
               <Header />
               <main className="flex-1">
                 {children}

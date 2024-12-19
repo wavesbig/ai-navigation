@@ -7,9 +7,9 @@ const prisma = new PrismaClient();
 // GET /api/websites/[id]
 // 获取单个网站
 export async function GET(
-  request: Request,
-  { params }: { params: { id: string } }
+  context: { params: { id: string } }
 ) {
+  const { params } = context;
   try {
     const websiteId = parseInt(params.id);
     const website = await prisma.website.findUnique({
@@ -36,16 +36,43 @@ export async function GET(
 // 删除网站
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
+  const params = await context.params;
   try {
+    if (!params?.id) {
+      return NextResponse.json(AjaxResponse.fail("Website ID is required", ), {
+
+      });
+    }
+
     const websiteId = parseInt(params.id);
+
+    // Check if website exists first
+    const website = await prisma.website.findUnique({
+      where: { id: websiteId }
+    });
+
+    if (!website) {
+      return NextResponse.json(AjaxResponse.fail("Website not found"), {
+        status: 404
+      });
+    }
+
+    // Delete the website
     await prisma.website.delete({
       where: { id: websiteId },
     });
-    return NextResponse.json(AjaxResponse.ok(null));
+
+    return NextResponse.json(AjaxResponse.ok("Website deleted successfully"));
+
   } catch (error) {
     console.error("Failed to delete website:", error);
+    if (error instanceof Error && error.message.includes("Record to delete does not exist")) {
+      return NextResponse.json(AjaxResponse.fail("Website not found"), {
+        status: 404
+      });
+    }
     return NextResponse.json(AjaxResponse.fail("Failed to delete website"), {
       status: 500,
     });
@@ -56,8 +83,9 @@ export async function DELETE(
 // 更新网站
 export async function PUT(
   request: Request,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
+  const params = await context.params;
   try {
     const data = await request.json();
     const websiteId = parseInt(params.id);

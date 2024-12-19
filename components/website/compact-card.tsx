@@ -59,10 +59,10 @@ export function CompactCard({ website, onVisit }: CompactCardProps) {
       >
         <Card className={cn(
           "group relative h-full flex flex-col overflow-hidden",
-          "bg-background/40 backdrop-blur-md backdrop-saturate-150",
-          "border-white/20 dark:border-white/10",
+          "bg-background/30 backdrop-blur-md backdrop-saturate-150",
+          "border-primary/15 dark:border-white/10",
           "hover:border-primary/20 dark:hover:border-primary/20",
-          "hover:bg-background/50 hover:backdrop-blur-xl",
+          "hover:bg-background/70 hover:backdrop-blur-xl",
           "shadow-sm hover:shadow-lg",
           "transition-colors duration-300"
         )}>
@@ -71,7 +71,7 @@ export function CompactCard({ website, onVisit }: CompactCardProps) {
           
           {/* Content */}
           <div className="relative p-3 flex items-center gap-3">
-            <WebsiteThumbnail url={website.url} thumbnail={website.thumbnail} title={website.title} size="sm" />
+            <WebsiteThumbnail url={website.url} thumbnail={website.thumbnail} title={website.title} />
             <div className="flex-1 min-w-0">
               <h3 className="font-medium text-sm line-clamp-1 group-hover:text-primary transition-colors">
                 {website.title}

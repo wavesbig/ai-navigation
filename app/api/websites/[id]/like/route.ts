@@ -5,10 +5,8 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 // POST /api/websites/[id]/like - Add like
-export async function POST(
-  request: Request,
-  { params }: { params: { id: string } }
-) {
+export async function POST(request: Request, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     const websiteId = parseInt(params.id);
     const updatedWebsite = await prisma.website.update({
@@ -26,10 +24,8 @@ export async function POST(
 }
 
 // DELETE /api/websites/[id]/like - Remove like
-export async function DELETE(
-  request: Request,
-  { params }: { params: { id: string } }
-) {
+export async function DELETE(request: Request, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     const websiteId = parseInt(params.id);
     const updatedWebsite = await prisma.website.update({

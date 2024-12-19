@@ -4,10 +4,8 @@ import { AjaxResponse } from "@/lib/types";
 
 const prisma = new PrismaClient();
 
-export async function PUT(
-  request: Request,
-  { params }: { params: { id: string } }
-) {
+export async function PUT(request: Request, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     const { status } = await request.json();
     const websiteId = parseInt(params.id);

@@ -80,8 +80,6 @@ export default function HomePage({ initialWebsites, initialCategories }: HomePag
       <motion.div 
         className="fixed inset-0 -z-10 overflow-hidden"
         initial={false}
-        animate={{ opacity: 1 }}
-        style={{ opacity: heroOpacity }}
       >
         <div className="absolute inset-0 bg-gradient-to-b from-background via-background/80 to-background" />
         <motion.div
@@ -167,8 +165,8 @@ export default function HomePage({ initialWebsites, initialCategories }: HomePag
               >
                 <Typewriter 
                   text="发现、分享和收藏优质AI工具与资源，让你的人工智能生活更美好"
-                  speed={10}
-                  delay={1000}
+                  speed={80}
+                  delay={500}
                 />
               </motion.div>
             </motion.div>

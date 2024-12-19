@@ -85,7 +85,7 @@ export function SearchBox({ value, onChange, className }: SearchBoxProps) {
     >
       {/* 搜索框背景光晕 */}
       <div className="absolute inset-0 bg-gradient-to-r from-background/80 via-background/50 to-background/80 rounded-xl backdrop-blur-md" />
-      <div className="absolute inset-0 bg-gradient-to-r from-soft-blue/20 via-soft-pink/20 to-soft-sky/20 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+      <div className="absolute inset-0 bg-gradient-to-r from-soft-blue/20 via-soft-pink/20 to-soft-sky/20 rounded-xl opacity-0 opacity-100 transition-opacity duration-500" />
       
       {/* 搜索框内容 */}
       <div className="relative flex items-center gap-2 p-1.5">

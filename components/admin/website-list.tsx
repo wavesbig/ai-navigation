@@ -1,10 +1,9 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Eye, Heart, ThumbsUp, ThumbsDown, Trash2, ExternalLink } from 'lucide-react';
+import { Eye, Heart, ThumbsUp, ThumbsDown, Trash2, ExternalLink, Clock } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useAtom } from 'jotai';
 import { websitesAtom } from '@/lib/atoms';
@@ -18,9 +17,11 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
+  AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { cn } from '@/lib/utils';
 import type { Website, Category } from '@/lib/types';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface WebsiteListProps {
   websites: Website[];
@@ -110,97 +111,65 @@ export function WebsiteList({ websites: initialWebsites, categories, showActions
     }
   };
 
-  const container = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1 // 控制子元素动画的间隔时间
-      }
-    }
-  };
-
-  const item = {
-    hidden: { 
-      opacity: 0,
-      y: 20 // 从下方20px的位置开始
-    },
-    visible: { 
-      opacity: 1,
-      y: 0,
-      transition: {
-        type: "spring",
-        stiffness: 300,
-        damping: 30
-      }
-    },
-    exit: {
-      opacity: 0,
-      y: 20,
-      transition: {
-        duration: 0.2
-      }
-    }
-  };
-
   if (websites.length === 0) {
     return (
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: 20 }}
-        className="flex items-center justify-center py-12 text-center"
-      >
-        <div className="max-w-[420px] text-muted-foreground">
-          <p className="text-lg mb-2">暂无网站</p>
-          <p className="text-sm">当前分类或状态下没有符合条件的网站</p>
-        </div>
-      </motion.div>
+      <div className="flex items-center justify-center py-12">
+        <motion.div 
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-center"
+        >
+          <div className="w-16 h-16 rounded-full bg-background/20 mx-auto mb-4 flex items-center justify-center">
+            <Clock className="w-8 h-8 text-muted-foreground/60" />
+          </div>
+          <h3 className="text-lg font-medium text-foreground mb-1">暂无网站</h3>
+          <p className="text-sm text-muted-foreground">当前分类或状态下没有符合条件的网站</p>
+        </motion.div>
+      </div>
     );
   }
 
   return (
     <>
-      <motion.div
-        className="w-full m-3 space-y-2"
-        variants={container}
-        initial="hidden"
-        animate="visible"
-      >
+      <div className="divide-y divide-border/30">
         <AnimatePresence mode="popLayout">
           {websites.map((website, index) => (
             <motion.div
               key={website.id}
-              variants={item}
-              layout
-              custom={index}
-              className="group px-3 py-2 bg-card border hover:border-border hover:shadow-sm transition-all duration-200"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              transition={{ duration: 0.2, delay: index * 0.05 }}
+              className="group px-4 py-3 hover:bg-background/30 transition-all duration-200"
             >
               <div className="flex items-start gap-3">
                 <WebsiteThumbnail
                   url={website.url}
                   thumbnail={website.thumbnail}
                   title={website.title}
-                  className="w-12 h-12 rounded shrink-0 transition-transform duration-200 group-hover:scale-105"
+                  className="w-12 h-12 rounded-lg shrink-0 shadow-sm transition-transform duration-200 group-hover:scale-105"
                 />
                 <div className="flex-1 min-w-0">
-                  <div className="flex flex-wrap items-center gap-1.5 mb-1">
-                    <h3 className="text-sm font-medium truncate hover:text-primary transition-colors">
+                  <div className="flex flex-wrap items-center gap-2 mb-1">
+                    <h3 className="text-sm font-medium truncate text-foreground">
                       {website.title}
                     </h3>
                     <div className="flex items-center gap-1.5">
-                      <Badge variant="outline" className="shrink-0 text-xs px-1.5 py-0">
+                      <Badge 
+                        variant="outline" 
+                        className="bg-background/30 border-border/40 text-xs px-1.5 py-0 h-5"
+                      >
                         {categories.find(c => c.id === website.category_id)?.name || '未分类'}
                       </Badge>
                       <Badge 
                         variant="secondary" 
-                        className={cn("shrink-0 text-xs px-1.5 py-0", getStatusColor(website.status))}
+                        className={cn("border-0 bg-background/30 text-xs px-1.5 py-0 h-5", getStatusColor(website.status))}
                       >
                         {getStatusText(website.status)}
                       </Badge>
                     </div>
                   </div>
-                  <p className="text-xs text-muted-foreground line-clamp-1 mb-1 group-hover:text-muted-foreground/80">
+                  <p className="text-xs text-muted-foreground line-clamp-1 mb-1.5">
                     {website.description}
                   </p>
                   <div className="flex items-center gap-3 text-xs text-muted-foreground">
@@ -215,12 +184,12 @@ export function WebsiteList({ websites: initialWebsites, categories, showActions
                   </div>
                 </div>
                 {showActions && (
-                  <div className="flex items-center gap-1 ml-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className="flex items-center gap-1 ml-2">
                     <Button
                       variant="ghost"
                       size="icon"
                       onClick={() => handleVisit(website.url)}
-                      className="h-7 w-7 text-muted-foreground hover:text-foreground"
+                      className="h-7 w-7 text-muted-foreground hover:text-foreground hover:bg-background/50"
                     >
                       <ExternalLink className="h-3.5 w-3.5" />
                     </Button>
@@ -229,7 +198,7 @@ export function WebsiteList({ websites: initialWebsites, categories, showActions
                         variant="ghost"
                         size="icon"
                         onClick={() => handleStatusUpdate(website.id, 'approved')}
-                        className="h-7 w-7 text-green-600 hover:text-green-700 hover:bg-green-100/50"
+                        className="h-7 w-7 text-green-600/70 hover:text-green-600 hover:bg-green-500/20"
                       >
                         <ThumbsUp className="h-3.5 w-3.5" />
                       </Button>
@@ -239,42 +208,46 @@ export function WebsiteList({ websites: initialWebsites, categories, showActions
                         variant="ghost"
                         size="icon"
                         onClick={() => handleStatusUpdate(website.id, 'rejected')}
-                        className="h-7 w-7 text-red-600 hover:text-red-700 hover:bg-red-100/50"
+                        className="h-7 w-7 text-red-600/70 hover:text-red-600 hover:bg-red-500/20"
                       >
                         <ThumbsDown className="h-3.5 w-3.5" />
                       </Button>
                     )}
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => setDeleteId(website.id)}
-                      className="h-7 w-7 text-red-600 hover:text-red-700 hover:bg-red-100/50"
-                    >
-                      <Trash2 className="h-3.5 w-3.5" />
-                    </Button>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-7 w-7 text-red-600/70 hover:text-red-600 hover:bg-red-500/20"
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent className="bg-background/95 backdrop-blur-sm border-border/40">
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>确认删除</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            此操作无法撤销，确定要删除这个网站吗？
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel className="bg-background/50">取消</AlertDialogCancel>
+                          <AlertDialogAction
+                            onClick={() => handleDelete(website.id)}
+                            className="bg-red-600/90 hover:bg-red-600"
+                          >
+                            确认删除
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
                   </div>
                 )}
               </div>
             </motion.div>
           ))}
         </AnimatePresence>
-      </motion.div>
-      <AlertDialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>确认删除</AlertDialogTitle>
-            <AlertDialogDescription>
-              此操作无法撤销，确定要删除这个网站吗？
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>取消</AlertDialogCancel>
-            <AlertDialogAction onClick={() => deleteId && handleDelete(deleteId)}>
-              删除
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      </div>
     </>
   );
 }

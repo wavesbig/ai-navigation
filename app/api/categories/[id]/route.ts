@@ -6,10 +6,8 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 // PUT: 更新分类
-export async function PUT(
-  request: Request,
-  { params }: { params: { id: string } }
-) {
+export async function PUT(request: Request, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     const { name, slug } = await request.json();
     const id = parseInt(params.id);
@@ -44,10 +42,8 @@ export async function PUT(
 }
 
 // DELETE: 删除分类
-export async function DELETE(
-  request: Request,
-  { params }: { params: { id: string } }
-) {
+export async function DELETE(request: Request, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     const id = parseInt(params.id);
 

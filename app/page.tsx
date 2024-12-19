@@ -14,15 +14,15 @@ export default async function Home() {
   const websites: Website[] = websitesData.map(website => ({
     ...website,
     status: website.status as Website['status'],
-    thumbnail: website.thumbnail || undefined,
-    created_at: website.created_at.toISOString(),
-    updated_at: website.updated_at.toISOString()
+    thumbnail: website.thumbnail || null,
+    created_at: new Date(website.created_at),
+    updated_at: new Date(website.updated_at)
   }));
 
   const categories: Category[] = categoriesData.map(category => ({
     ...category,
-    created_at: category.created_at.toISOString(),
-    updated_at: category.updated_at.toISOString()
+    created_at: new Date(category.created_at),
+    updated_at: new Date(category.updated_at)
   }));
 
   return <HomePage initialWebsites={websites} initialCategories={categories} />;

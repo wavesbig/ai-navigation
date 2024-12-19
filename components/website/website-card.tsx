@@ -28,14 +28,14 @@ export function WebsiteCard({ website, category, isAdmin, onVisit, onStatusUpdat
   const [likes, setLikes] = useState(website.likes);
   const { cardRef, tiltProps } = useCardTilt();
 
-  const statusColors = {
+  const statusColors: Record<Website['status'], string> = {
     pending: 'bg-yellow-500/10 text-yellow-600 dark:text-yellow-400',
     approved: 'bg-green-500/10 text-green-600 dark:text-green-400',
     rejected: 'bg-red-500/10 text-red-600 dark:text-red-400',
     all: '',
   };
 
-  const statusText = {
+  const statusText: Record<Website['status'], string> = {
     pending: '待审核',
     approved: '已通过',
     rejected: '已拒绝',
@@ -73,10 +73,10 @@ export function WebsiteCard({ website, category, isAdmin, onVisit, onStatusUpdat
       >
         <Card className={cn(
           "group relative h-full flex flex-col overflow-hidden",
-          "bg-background/40 backdrop-blur-md backdrop-saturate-150",
-          "border-white/20 dark:border-white/10",
+          "bg-background/30 backdrop-blur-md backdrop-saturate-150",
+          "border-primary/15 dark:border-white/10",
           "hover:border-primary/20 dark:hover:border-primary/20",
-          "hover:bg-background/50 hover:backdrop-blur-xl",
+          "hover:bg-background/70 hover:backdrop-blur-xl",
           "shadow-sm hover:shadow-lg",
           "transition-colors duration-300"
         )}>
