@@ -2,6 +2,8 @@ import { prisma } from '@/lib/db';
 import HomePage from '@/components/pages/home-page';
 import type { Category, Website } from '@/lib/types';
 
+export const dynamic = 'force-dynamic';
+
 export default async function Home() {
   // 在服务端获取初始数据
   const [websitesData, categoriesData] = await Promise.all([
