@@ -38,7 +38,6 @@ export default function HomePage({
   const contentRef = useRef<HTMLDivElement>(null);
   const { scrollY } = useScroll();
   const { theme } = useTheme();
-
   // Enhanced scroll-based animations
   const heroOpacity = useTransform(scrollY, [0, 400], [1, 0]);
   const heroScale = useTransform(scrollY, [0, 400], [1, 0.9]);
@@ -134,14 +133,22 @@ export default function HomePage({
           {/* Floating Icons */}
           <AnimatePresence mode="popLayout">
             {[
-              { Icon: Brain, position: "left-1/4 top-1/4", size: "w-12 h-12" },
+              {
+                Icon: Brain,
+                position: "left-1/4 top-1/4",
+                size: "w-12 h-12",
+              },
               { Icon: Cpu, position: "right-1/4 top-1/3", size: "w-10 h-10" },
               {
                 Icon: Sparkles,
                 position: "left-1/3 bottom-1/4",
                 size: "w-8 h-8",
               },
-              { Icon: Zap, position: "right-1/3 bottom-1/3", size: "w-9 h-9" },
+              {
+                Icon: Zap,
+                position: "right-1/3 bottom-1/3",
+                size: "w-9 h-9",
+              },
             ].map(({ Icon, position, size }, index) => (
               <motion.div
                 key={index}

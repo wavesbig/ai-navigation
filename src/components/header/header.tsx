@@ -175,14 +175,13 @@ export default function Header() {
 
   return (
     <header
-      className={cn(
-        "sticky top-0 z-50 w-full border-b border-border",
-        "transition-all duration-100"
-      )}
+      className={cn("sticky top-0 z-50 w-full", "transition-all duration-100")}
       style={{
-        backgroundColor: `hsl(var(--background) / ${0.5 + opacity * 0.5})`,
-        backdropFilter: `blur(${8 + opacity * 8}px)`,
-        WebkitBackdropFilter: `blur(${8 + opacity * 8}px)`, // Safari 支持
+        background: `rgba(var(--background), ${opacity * 0.8})`,
+        backdropFilter: `blur(${opacity * 8}px)`,
+        WebkitBackdropFilter: `blur(${opacity * 8}px)`,
+        borderBottom:
+          opacity > 0 ? "1px solid rgba(var(--border), 0.1)" : "none",
       }}
     >
       <nav className="container mx-auto px-4 h-14">

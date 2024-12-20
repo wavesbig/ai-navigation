@@ -66,9 +66,9 @@ export default function WebsiteGrid({
       <motion.div
         layout
         className={cn(
-          "grid gap-4 auto-rows-fr min-h-[400px]",
+          "grid gap-2 sm:gap-4",
           isCompact
-            ? "grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5"
+            ? "grid-cols-1"
             : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
         )}
       >

@@ -81,7 +81,7 @@ export function WebsiteCard({
   };
 
   return (
-    <div ref={cardRef} {...tiltProps} className="h-[220px] card-container">
+    <div ref={cardRef} {...tiltProps} className="card-container">
       <motion.div
         variants={cardHoverVariants}
         initial="initial"
@@ -93,34 +93,35 @@ export function WebsiteCard({
       >
         <Card
           className={cn(
-            "group relative h-full flex flex-col overflow-hidden",
+            "group relative flex flex-col overflow-hidden",
             "bg-background/30 backdrop-blur-md backdrop-saturate-150",
             "border-primary/15 dark:border-white/10",
             "hover:border-primary/20 dark:hover:border-primary/20",
-            "hover:bg-background/70 hover:backdrop-blur-xl",
+            "hover:bg-background/50 hover:backdrop-blur-xl",
             "shadow-sm hover:shadow-lg",
-            "transition-colors duration-300"
+            "transition-colors duration-300",
+            "rounded-2xl sm:rounded-lg"
           )}
         >
           {/* Background Gradient */}
           <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background/5 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-700" />
 
           {/* Website Icon and Status */}
-          <div className="relative p-3 flex items-center justify-between card-content">
-            <div className="flex items-center gap-3 max-w-[75%]">
+          <div className="relative p-2 sm:p-3 flex items-center justify-between card-content">
+            <div className="flex items-center gap-2 sm:gap-3 max-w-[75%]">
               <WebsiteThumbnail
                 url={website.url}
                 thumbnail={website.thumbnail}
                 title={website.title}
               />
               <div className="space-y-0.5 min-w-0">
-                <h3 className="font-medium truncate group-hover:text-primary transition-colors">
+                <h3 className="text-sm sm:text-base font-medium truncate group-hover:text-primary transition-colors">
                   {website.title}
                 </h3>
                 <Badge
                   variant="secondary"
                   className={cn(
-                    "font-normal text-xs",
+                    "font-normal text-[10px] sm:text-xs",
                     statusColors[website.status]
                   )}
                 >
@@ -130,99 +131,105 @@ export function WebsiteCard({
             </div>
             <Badge
               variant="outline"
-              className="text-xs font-normal bg-background/50 backdrop-blur-sm shrink-0"
+              className={cn(
+                "text-[10px] sm:text-xs font-normal",
+                "bg-background/50 backdrop-blur-sm shrink-0",
+                "absolute top-1.5 right-1.5 sm:static",
+                "rounded-xl sm:rounded-lg"
+              )}
             >
               {category?.name || "未分类"}
             </Badge>
           </div>
 
           {/* Description */}
-          <div className="relative px-3 flex-1">
-            <p className="text-sm text-muted-foreground line-clamp-2">
+          <div className="relative px-2 py-1.5 sm:px-3 sm:py-2 flex-1">
+            <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2">
               {website.description}
             </p>
           </div>
 
-          {/* Stats */}
-          <div className="relative px-3 py-2 flex items-center justify-between text-xs text-muted-foreground border-t border-border/5">
-            <div className="flex items-center gap-3">
+          {/* Stats and Actions */}
+          <div className="relative px-2 py-1.5 sm:px-3 sm:py-2 flex items-center justify-between border-t border-border/5">
+            {/* Stats */}
+            <div className="flex items-center gap-3 text-[10px] sm:text-xs text-muted-foreground">
               <span>{website.visits} 次访问</span>
               <div className="flex items-center gap-1">
                 <Heart className="w-3 h-3" />
                 <span>{likes}</span>
               </div>
             </div>
-          </div>
 
-          {/* Actions */}
-          <div className="relative p-3 flex gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => onVisit(website)}
-              className={cn(
-                "flex-1 h-8",
-                "bg-background/50 backdrop-blur-sm border-white/20",
-                "hover:bg-background/60 hover:border-primary/30 hover:text-primary",
-                "transition-all duration-300"
-              )}
-            >
-              <span className="flex-1">访问网站</span>
-              <ArrowUpRight className="h-4 w-4 ml-1" />
-            </Button>
-
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleLike}
-              className={cn(
-                "h-8 w-8 p-0",
-                "bg-background/50 backdrop-blur-sm border-white/20",
-                "hover:bg-red-500/10 hover:border-red-500/30 hover:text-red-500",
-                "transition-all duration-300"
-              )}
-            >
-              <motion.div
-                whileTap={{ scale: 1.4 }}
-                transition={{ duration: 0.2 }}
-              >
-                <Heart className="h-4 w-4" />
-              </motion.div>
-            </Button>
-
-            {isAdmin && website.status !== "approved" && (
+            {/* Actions */}
+            <div className="flex items-center gap-1.5 sm:gap-2">
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => onStatusUpdate(website.id, "approved")}
+                onClick={() => onVisit(website)}
                 className={cn(
-                  "h-8 px-2",
+                  "h-7 sm:h-8 px-3 sm:flex-1 text-xs sm:text-sm",
                   "bg-background/50 backdrop-blur-sm border-white/20",
-                  "hover:bg-green-500/10 hover:border-green-500/30 hover:text-green-500",
+                  "hover:bg-background/60 hover:border-primary/30 hover:text-primary",
                   "transition-all duration-300"
                 )}
               >
-                <ThumbsUp className="h-4 w-4" />
+                <span className="hidden sm:inline">访问网站</span>
+                <ArrowUpRight className="h-3 w-3 sm:h-4 sm:w-4" />
               </Button>
-            )}
 
-            {isAdmin && website.status !== "rejected" && (
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => {
-                  onStatusUpdate(website.id, "rejected");
-                }}
+                onClick={handleLike}
                 className={cn(
-                  "h-8 px-2",
+                  "h-7 w-7 sm:h-8 sm:w-8 p-0",
                   "bg-background/50 backdrop-blur-sm border-white/20",
                   "hover:bg-red-500/10 hover:border-red-500/30 hover:text-red-500",
                   "transition-all duration-300"
                 )}
               >
-                <ThumbsDown className="h-4 w-4" />
+                <motion.div
+                  whileTap={{ scale: 1.4 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <Heart className="h-3 w-3 sm:h-4 sm:w-4" />
+                </motion.div>
               </Button>
-            )}
+
+              {isAdmin && website.status !== "approved" && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => onStatusUpdate(website.id, "approved")}
+                  className={cn(
+                    "h-7 sm:h-8 px-1.5 sm:px-2",
+                    "bg-background/50 backdrop-blur-sm border-white/20",
+                    "hover:bg-green-500/10 hover:border-green-500/30 hover:text-green-500",
+                    "transition-all duration-300"
+                  )}
+                >
+                  <ThumbsUp className="h-3 w-3 sm:h-4 sm:w-4" />
+                </Button>
+              )}
+
+              {isAdmin && website.status !== "rejected" && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    onStatusUpdate(website.id, "rejected");
+                  }}
+                  className={cn(
+                    "h-7 sm:h-8 px-1.5 sm:px-2",
+                    "bg-background/50 backdrop-blur-sm border-white/20",
+                    "hover:bg-red-500/10 hover:border-red-500/30 hover:text-red-500",
+                    "transition-all duration-300"
+                  )}
+                >
+                  <ThumbsDown className="h-3 w-3 sm:h-4 sm:w-4" />
+                </Button>
+              )}
+            </div>
           </div>
         </Card>
       </motion.div>
