@@ -1,12 +1,11 @@
 # AI 导航 | AI Navigation
 
-
 <div align="center">
 
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
 ![Node](https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen.svg)
 ![React](https://img.shields.io/badge/react-%5E18.2.0-blue.svg)
-![Next.js](https://img.shields.io/badge/next.js-13.5.1-black)
+![Next.js](https://img.shields.io/badge/next.js-14.1.0-black)
 
 </div>
 
@@ -23,14 +22,30 @@ AI 导航是一个现代化的人工智能网站导航系统，致力于帮助�
 - 🚀 **智能抓取**: 自动获取网站标题、描述和图片
 - 👮‍♂️ **后台管理**: 完善的管理员功能和审核机制
 - 💾 **数据安全**: 支持数据备份与云端同步
-- ⚙️ **高可配置**: 可自定义主题、样式和页面布局
 
 ## 🚀 界面展示
 
-### 首页
-![首页展示](doc/images/home.png)
-![深色模式](doc/images/dark-mode.png)
+### 示例站点
 
+- [AI 导航](https://ainavix.com) - 发现、分享和收藏优质 AI 工具与资源
+
+### 界面预览
+
+#### 首页浅色主题
+
+![首页浅色主题](/public/compose.png)
+
+#### 首页深色主题
+
+![首页深色主题](/public/compose-dark.png)
+
+#### 排行榜
+
+![排行榜](/public/rankings.png)
+
+#### 深色模式
+
+![深色模式](/public/dark.png)
 
 ## 🛠️ 开发步骤
 
@@ -46,17 +61,20 @@ AI 导航是一个现代化的人工智能网站导航系统，致力于帮助�
 1. Fork 项目仓库到你的 GitHub 账号
 
 2. 克隆项目到本地:
+
 ```bash
 git clone https://github.com/liyown/AI-NAV.git
 cd AI-NAV
 ```
 
 3. 安装项目依赖:
+
 ```bash
 npm install
 ```
 
 4. 环境变量配置:
+
 ```bash
 # 复制环境变量模板
 cp .env.example .env.local
@@ -65,6 +83,7 @@ cp .env.example .env.local
 ```
 
 5. 初始化数据库:
+
 ```bash
 npx prisma migrate dev
 npm run init-data
@@ -73,16 +92,19 @@ npm run init-data
 ### 3. 开发流程
 
 1. 创建新的功能分支:
+
 ```bash
 git checkout -b feature/your-feature-name
 ```
 
 2. 启动开发服务器:
+
 ```bash
 npm run dev
 ```
 
 3. 代码质量检查:
+
 ```bash
 # 运行代码检查
 npm run lint
@@ -92,11 +114,13 @@ npm run type-check
 ```
 
 4. 提交代码:
+
 ```bash
 git add .
 git commit -m "feat: 添加新功能"
 git push origin feature/your-feature-name
 ```
+
 ### 开发约束
 
 #### 提交规范
@@ -112,6 +136,7 @@ git push origin feature/your-feature-name
 2. 在 [Vercel](https://vercel.com/) 注册账号并连接 GitHub
 
 3. 在 Vercel 中导入项目:
+
    - 点击 "New Project"
    - 选择你 fork 的仓库
    - 配置项目设置:
@@ -120,6 +145,7 @@ git push origin feature/your-feature-name
      - Node.js Version: 18.x
 
 4. 配置环境变量:
+
    - 在 Vercel 项目设置中添加必要的环境变量
    - 确保所有 .env.local 中的变量都已配置
 
@@ -133,11 +159,13 @@ git push origin feature/your-feature-name
 #### Docker 部署
 
 1. 构建 Docker 镜像:
+
 ```bash
 docker build -t ai-nav .
 ```
 
 2. 运行容器:
+
 ```bash
 docker run -d \
   -p 3000:3000 \
@@ -147,12 +175,12 @@ docker run -d \
   ai-nav
 ```
 
-
 ## 🔧 核心功能
 
 ### 网站管理
 
 - **网站提交**
+
   - 支持手动填写和自动抓取
   - 分类管理和标签系统
   - 审核流程和状态追踪
@@ -172,11 +200,13 @@ docker run -d \
 #### 安装油猴脚本
 
 1. 安装浏览器扩展
+
    - Chrome: [Tampermonkey](https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo)
    - Firefox: [Tampermonkey](https://addons.mozilla.org/en-US/firefox/addon/tampermonkey/)
    - Edge: [Tampermonkey](https://microsoftedge.microsoft.com/addons/detail/tampermonkey/iikmkjmpaadaobahmlepeloendndfphd)
 
 2. 安装收藏脚本
+
    - 点击 [安装脚本](https://ai-nav.vercel.app/scripts/ai-nav-collector.user.js)
    - 或手动复制 `scripts/ai-nav-collector.user.js` 内容创建新脚本
 
@@ -190,28 +220,42 @@ docker run -d \
 ## 🛠️ 技术栈
 
 - **前端框架**:
-  - Next.js 13 (App Router)
+
+  - Next.js 14 (App Router)
   - React 18
   - TypeScript
 
 - **状态管理**:
-  - Jotai
+
+  - Zustand
+  - React Query
 
 - **UI 框架**:
+
   - Tailwind CSS
   - shadcn/ui
   - Framer Motion
 
 - **数据存储**:
-  - SQLite
-  - 阿里云 OSS
+
+  - PostgreSQL
+  - Prisma ORM
+  - Redis
+
+- **认证授权**:
+
+  - NextAuth.js
+  - JWT
 
 - **工具链**:
   - React Hook Form
   - Zod
   - Lucide React
+  - ESLint
+  - Prettier
 
 ## 📄 开源协议 本项目采用 [MIT](LICENSE) 协议开源。
+
 <div align="center">
 
 **AI 导航** © 2024 Made with ❤️
