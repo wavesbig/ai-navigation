@@ -15,7 +15,7 @@ function shouldRefreshCache(
   if (!cachedData) return true;
 
   const { timestamp } = cachedData;
-  const age = Date.now() - timestamp;
+  const age = (Date.now() - timestamp) / 1000;
   const isExpired = age > options.ttl;
 
   // Refresh cache if it's more than 80% through its TTL
@@ -25,7 +25,7 @@ function shouldRefreshCache(
 }
 
 interface CacheOptions {
-  ttl: number; // 缓存时间（毫秒）
+  ttl: number; // 缓存时间（秒）
 }
 
 interface CacheEntry<T> {
@@ -37,7 +37,7 @@ interface CacheEntry<T> {
 export async function cachedPrismaQuery<T>(
   queryName: string,
   queryFn: () => Promise<T>,
-  options: CacheOptions = { ttl: 3600000 }
+  options: CacheOptions = { ttl: 3600 }
 ): Promise<T> {
   const cacheKey = queryName;
   const cachedData = cache.get(cacheKey) as CacheEntry<T> | undefined;
@@ -51,12 +51,12 @@ export async function cachedPrismaQuery<T>(
 
   if (cachedData) {
     const { data, timestamp } = cachedData;
-    const age = Date.now() - timestamp;
+    const age = (Date.now() - timestamp) / 1000;
     const isExpired = shouldRefreshCache(cachedData, options);
 
     console.log(`[Cache] 找到缓存数据`);
-    console.log(`[Cache] 缓存年龄: ${(age / 1000).toFixed(1)}秒`);
-    console.log(`[Cache] TTL设置: ${(options.ttl / 1000).toFixed(1)}秒`);
+    console.log(`[Cache] 缓存年龄: ${age.toFixed(1)}秒`);
+    console.log(`[Cache] TTL设置: ${options.ttl.toFixed(1)}秒`);
 
     if (isExpired) {
       console.log(`[Cache] 缓存已过期 ❌ `);

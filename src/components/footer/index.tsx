@@ -19,7 +19,7 @@ export async function Footer() {
             created_at: "asc",
           },
         }),
-      { ttl: 3600000 } // 1小时缓存
+      { ttl: 86400 } // 1天缓存
     ),
     cachedPrismaQuery(
       "footer-settings",
@@ -35,7 +35,7 @@ export async function Footer() {
             },
           },
         }),
-      { ttl: 2592000000 } // 1个月缓存
+      { ttl: 2592000 } // 1个月缓存
     ),
   ]);
 

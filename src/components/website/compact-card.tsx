@@ -29,7 +29,8 @@ export function CompactCard({ website, onVisit }: CompactCardProps) {
     transitionZ: 10, // 减小Z轴位移
   });
 
-  const handleLike = async () => {
+  const handleLike = async (e: React.MouseEvent) => {
+    e.stopPropagation(); // 阻止事件冒泡到卡片点击
     const key = `website-${website.id}-liked`;
     if (localStorage.getItem(key)) {
       toast({
@@ -49,7 +50,13 @@ export function CompactCard({ website, onVisit }: CompactCardProps) {
   };
 
   return (
-    <div ref={cardRef} {...tiltProps} className="card-container">
+    <div
+      ref={cardRef}
+      {...tiltProps}
+      className="card-container"
+      onClick={() => onVisit(website)}
+      style={{ cursor: "pointer" }}
+    >
       <motion.div
         variants={cardHoverVariants}
         initial="initial"
@@ -74,57 +81,55 @@ export function CompactCard({ website, onVisit }: CompactCardProps) {
           <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background/5 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-700" />
 
           {/* Content */}
-          <div className="relative py-2 px-3 sm:p-3 flex items-center gap-3">
-            <WebsiteThumbnail
-              url={website.url}
-              thumbnail={website.thumbnail}
-              title={website.title}
-              className="w-9 h-9 sm:w-10 sm:h-10"
-            />
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-3">
-                <h3 className="font-medium text-sm flex-1 truncate group-hover:text-primary transition-colors">
-                  {website.title}
-                </h3>
-                <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground shrink-0">
-                  <Heart className="w-3.5 h-3.5" />
-                  <span>{likes}</span>
+          <div className="relative py-2 px-3 sm:p-3 flex flex-col gap-2">
+            <div className="flex items-center gap-3">
+              <WebsiteThumbnail
+                url={website.url}
+                thumbnail={website.thumbnail}
+                title={website.title}
+                className="w-9 h-9 sm:w-10 sm:h-10"
+              />
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-3">
+                  <h3 className="font-medium text-sm flex-1 truncate group-hover:text-primary transition-colors">
+                    {website.title}
+                  </h3>
+                  <div className="flex items-center gap-3 text-[10px] text-muted-foreground shrink-0">
+                    <div className="flex items-center gap-1.5">
+                      <Heart className="w-3.5 h-3.5" />
+                      <span>{likes}</span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <Globe className="w-3.5 h-3.5" />
+                      <span>{website.visits}</span>
+                    </div>
+                  </div>
                 </div>
+                <p className="text-xs text-muted-foreground mt-0.5 line-clamp-1">
+                  {website.description}
+                </p>
               </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => onVisit(website)}
-                className={cn(
-                  "h-8 w-8 p-0",
-                  "bg-background/50 backdrop-blur-sm border-white/20",
-                  "hover:bg-background/60 hover:border-primary/30 hover:text-primary",
-                  "transition-all duration-300"
-                )}
-              >
-                <ArrowUpRight className="h-4 w-4" />
-              </Button>
-
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleLike}
-                className={cn(
-                  "h-8 w-8 p-0",
-                  "bg-background/50 backdrop-blur-sm border-white/20",
-                  "hover:bg-red-500/10 hover:border-red-500/30 hover:text-red-500",
-                  "transition-all duration-300"
-                )}
-              >
-                <motion.div
-                  whileTap={{ scale: 1.4 }}
-                  transition={{ duration: 0.2 }}
+              <div className="flex items-center gap-2 ml-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleLike}
+                  className={cn(
+                    "h-8 w-8 p-0",
+                    "bg-white/[0.02] backdrop-blur-xl border-white/10",
+                    "hover:bg-red-500/5 hover:border-red-500/20 hover:text-red-500",
+                    "dark:bg-white/[0.01] dark:hover:bg-red-500/10",
+                    "transition-all duration-300"
+                  )}
                 >
-                  <Heart className="h-4 w-4" />
-                </motion.div>
-              </Button>
+                  <motion.div
+                    whileTap={{ scale: 1.4 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <Heart className="h-4 w-4" />
+                  </motion.div>
+                </Button>
+              </div>
             </div>
           </div>
         </Card>
