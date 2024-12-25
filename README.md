@@ -121,12 +121,6 @@ git commit -m "feat: 添加新功能"
 git push origin feature/your-feature-name
 ```
 
-### 开发约束
-
-#### 提交规范
-
-![引用仓库的这个图片](static/image.png)
-
 ## 📦 部署步骤
 
 ### 1. Vercel 部署（推荐）
