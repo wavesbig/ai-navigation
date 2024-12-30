@@ -5,7 +5,8 @@ import { Toaster } from "@/ui/common/sonner";
 import Header from "@/components/header/header";
 import Footer from "@/components/footer/index";
 import SWRProvider from "@/components/providers/swr-provider";
-
+import { Analytics as VercelAnalytics } from "@vercel/analytics/react";
+import { Analytics as OtherAnalytics } from "@/components/analytics";
 export default function RootLayout({
   children,
 }: {
@@ -33,6 +34,8 @@ export default function RootLayout({
             <Toaster />
           </StoreProvider>
         </ThemeProvider>
+        <VercelAnalytics />
+        <OtherAnalytics googleAnalyticsId="G-9MNGY82H1J" />
       </body>
     </html>
   );
