@@ -57,7 +57,6 @@ const CLICK_TIMEOUT = 3000;
 export default function Header() {
   const [opacity, setOpacity] = useState(0);
   const maxScroll = 100; // 滚动100px达到最大效果
-  const [isOpen, setIsOpen] = useState(false);
   const [isAdmin, setIsAdmin] = useAtom(isAdminModeAtom);
   const [websites] = useAtom(websitesAtom);
   const [clickCount, setClickCount] = useState(0);
@@ -154,13 +153,11 @@ export default function Header() {
 
   const exitAdminMode = () => {
     setIsAdmin(false);
-    setIsOpen(false);
     router.push("/");
   };
 
   const handleMobileRankingsClick = () => {
     setShowRankings(!showRankings);
-    setIsOpen(false);
   };
 
   const handleVisit = async (website: Website) => {
@@ -239,14 +236,10 @@ export default function Header() {
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Link href="/scripts/ai-nav-collector.user.js">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="flex items-center gap-2 text-foreground/80 hover:text-foreground"
-                    >
-                      <Download className="h-4 w-4" />
-                      <span>安装脚本</span>
+                  <Link href="/scripts/tamper-monkey-script.user.js">
+                    <Button variant="ghost" className="w-full justify-start">
+                      <Download className="h-4 w-4 mr-2" />
+                      安装脚本
                     </Button>
                   </Link>
                 </TooltipTrigger>
@@ -321,175 +314,143 @@ export default function Header() {
             <ThemeSwitch />
           </div>
 
-          <button
-            className="md:hidden text-foreground/80 hover:text-foreground transition-colors"
-            onClick={() => setIsOpen(!isOpen)}
-          >
-            {isOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          <button className="md:hidden text-foreground/80 hover:text-foreground transition-colors">
+            <Menu className="h-5 w-5" />
           </button>
         </div>
 
-        {isOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.2 }}
-            className="md:hidden absolute left-0 right-0 mt-2 mx-4 rounded-lg p-4 space-y-4 shadow-lg bg-popover border border-border"
-          >
-            <div className="flex flex-col gap-3">
-              <motion.div
-                className="space-y-2"
-                initial={{ opacity: 0, y: -5 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 }}
-              >
-                <Link
-                  href="/"
-                  className="w-full"
-                  onClick={() => setIsOpen(false)}
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -10 }}
+          transition={{ duration: 0.2 }}
+          className="md:hidden absolute left-0 right-0 mt-2 mx-4 rounded-lg p-4 space-y-4 shadow-lg bg-popover border border-border"
+        >
+          <div className="flex flex-col gap-3">
+            <motion.div
+              className="space-y-2"
+              initial={{ opacity: 0, y: -5 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+            >
+              <Link href="/" className="w-full">
+                <Button
+                  variant="ghost"
+                  className="w-full justify-start font-medium text-base rounded-md h-12 hover:bg-accent hover:text-accent-foreground"
                 >
-                  <Button
-                    variant="ghost"
-                    className="w-full justify-start font-medium text-base rounded-md h-12 hover:bg-accent hover:text-accent-foreground"
-                  >
-                    <Command className="h-5 w-5 mr-3 text-primary" />
-                    主页
-                  </Button>
-                </Link>
-                <Link
-                  href="/rankings"
-                  className="w-full"
-                  onClick={() => setIsOpen(false)}
+                  <Command className="h-5 w-5 mr-3 text-primary" />
+                  主页
+                </Button>
+              </Link>
+              <Link href="/rankings" className="w-full">
+                <Button
+                  variant="ghost"
+                  className="w-full justify-start font-medium text-base rounded-md h-12 hover:bg-accent hover:text-accent-foreground"
                 >
-                  <Button
-                    variant="ghost"
-                    className="w-full justify-start font-medium text-base rounded-md h-12 hover:bg-accent hover:text-accent-foreground"
-                  >
-                    <Trophy className="h-5 w-5 mr-3 text-primary" />
-                    排行榜
-                  </Button>
-                </Link>
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Link
-                        href="/scripts/ai-nav-collector.user.js"
-                        className="w-full"
-                        onClick={() => setIsOpen(false)}
-                      >
-                        <Button
-                          variant="ghost"
-                          className="w-full justify-start font-medium text-base rounded-md h-12 hover:bg-accent hover:text-accent-foreground"
-                        >
-                          <Download className="h-5 w-5 mr-3 text-primary" />
-                          安装脚本
-                        </Button>
-                      </Link>
-                    </TooltipTrigger>
-                    <TooltipContent
-                      side="bottom"
-                      className="max-w-[300px] p-4 bg-popover text-popover-foreground"
-                    >
-                      <p className="font-medium mb-2">AI导航助手脚本</p>
-                      <p className="text-sm text-muted-foreground leading-relaxed">
-                        功能：自动识别并采集当前网页的AI工具信息，快速提交到AI导航。
-                      </p>
-                      <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
-                        需要先安装 Tampermonkey 或 Violentmonkey 浏览器扩展。
-                      </p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-              </motion.div>
-
-              <motion.div
-                className="space-y-2"
-                initial={{ opacity: 0, y: -5 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 }}
-              >
-                <Link
-                  href="/submit"
-                  className="w-full"
-                  onClick={() => setIsOpen(false)}
-                >
-                  <Button className="w-full justify-start font-medium text-base rounded-md h-12 bg-primary text-primary-foreground hover:bg-primary/90">
-                    <Plus className="h-5 w-5 mr-3" />
-                    提交网站
-                  </Button>
-                </Link>
-                <Link
-                  href="/about"
-                  className="w-full"
-                  onClick={() => setIsOpen(false)}
-                >
-                  <Button
-                    variant="ghost"
-                    className="w-full justify-start font-medium text-base rounded-md h-12 hover:bg-accent hover:text-accent-foreground"
-                  >
-                    <Info className="h-5 w-5 mr-3 text-primary" />
-                    关于
-                  </Button>
-                </Link>
-              </motion.div>
-
-              {isAdmin && (
-                <>
-                  <motion.div
-                    className="h-px my-1 bg-border"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 0.3 }}
-                  />
-                  <motion.div
-                    className="space-y-2"
-                    initial={{ opacity: 0, y: -5 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.3 }}
-                  >
-                    <Link
-                      href="/admin"
-                      className="w-full"
-                      onClick={() => setIsOpen(false)}
-                    >
-                      <Button
-                        variant="ghost"
-                        className="w-full justify-start font-medium text-base rounded-md h-12 hover:bg-accent hover:text-accent-foreground"
-                      >
-                        <Settings className="h-5 w-5 mr-3 text-primary" />
-                        管理界面
+                  <Trophy className="h-5 w-5 mr-3 text-primary" />
+                  排行榜
+                </Button>
+              </Link>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Link href="/scripts/tamper-monkey-script.user.js">
+                      <Button variant="ghost" className="w-full justify-start">
+                        <Download className="h-4 w-4 mr-2" />
+                        安装脚本
                       </Button>
                     </Link>
+                  </TooltipTrigger>
+                  <TooltipContent
+                    side="bottom"
+                    className="max-w-[300px] p-4 bg-popover text-popover-foreground"
+                  >
+                    <p className="font-medium mb-2">AI导航助手脚本</p>
+                    <p className="text-sm text-muted-foreground leading-relaxed">
+                      功能：自动识别并采集当前网页的AI工具信息，快速提交到AI导航。
+                    </p>
+                    <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
+                      需要先安装 Tampermonkey 或 Violentmonkey 浏览器扩展。
+                    </p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </motion.div>
+
+            <motion.div
+              className="space-y-2"
+              initial={{ opacity: 0, y: -5 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+            >
+              <Link href="/submit" className="w-full">
+                <Button className="w-full justify-start font-medium text-base rounded-md h-12 bg-primary text-primary-foreground hover:bg-primary/90">
+                  <Plus className="h-5 w-5 mr-3" />
+                  提交网站
+                </Button>
+              </Link>
+              <Link href="/about" className="w-full">
+                <Button
+                  variant="ghost"
+                  className="w-full justify-start font-medium text-base rounded-md h-12 hover:bg-accent hover:text-accent-foreground"
+                >
+                  <Info className="h-5 w-5 mr-3 text-primary" />
+                  关于
+                </Button>
+              </Link>
+            </motion.div>
+
+            {isAdmin && (
+              <>
+                <motion.div
+                  className="h-px my-1 bg-border"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.3 }}
+                />
+                <motion.div
+                  className="space-y-2"
+                  initial={{ opacity: 0, y: -5 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3 }}
+                >
+                  <Link href="/admin" className="w-full">
                     <Button
                       variant="ghost"
-                      className="w-full justify-start font-medium text-base rounded-md h-12 text-destructive hover:bg-destructive/10"
-                      onClick={exitAdminMode}
+                      className="w-full justify-start font-medium text-base rounded-md h-12 hover:bg-accent hover:text-accent-foreground"
                     >
-                      <LogOut className="h-5 w-5 mr-3" />
-                      退出管理
+                      <Settings className="h-5 w-5 mr-3 text-primary" />
+                      管理界面
                     </Button>
-                  </motion.div>
-                </>
-              )}
+                  </Link>
+                  <Button
+                    variant="ghost"
+                    className="w-full justify-start font-medium text-base rounded-md h-12 text-destructive hover:bg-destructive/10"
+                    onClick={exitAdminMode}
+                  >
+                    <LogOut className="h-5 w-5 mr-3" />
+                    退出管理
+                  </Button>
+                </motion.div>
+              </>
+            )}
 
-              <motion.div
-                className="h-px my-1 bg-border"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.4 }}
-              />
-              <motion.div
-                className="flex justify-end pt-1"
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.4 }}
-              >
-                <ThemeSwitch />
-              </motion.div>
-            </div>
-          </motion.div>
-        )}
+            <motion.div
+              className="h-px my-1 bg-border"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.4 }}
+            />
+            <motion.div
+              className="flex justify-end pt-1"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.4 }}
+            >
+              <ThemeSwitch />
+            </motion.div>
+          </div>
+        </motion.div>
       </nav>
 
       <Dialog
