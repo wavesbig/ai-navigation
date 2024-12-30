@@ -9,6 +9,8 @@
 // @grant        GM_registerMenuCommand
 // @grant        GM_notification
 // @grant        GM_addStyle
+// @grant        GM_setValue
+// @grant        GM_getValue
 // @connect      www.ainavix.com
 // @icon         https://www.ainavix.com/favicon.ico
 // @run-at       document-end
@@ -485,6 +487,18 @@
     // 获取分类列表
     async getCategories() {
       console.log("正在获取分类列表...");
+
+      // 先尝试从缓存获取
+      const cachedData = GM_getValue("categories");
+      const cacheTime = GM_getValue("categoriesTime");
+      const now = Date.now();
+
+      // 如果缓存存在且未过期（24小时内）
+      if (cachedData && cacheTime && now - cacheTime < 24 * 60 * 60 * 1000) {
+        console.log("使用缓存的分类数据");
+        return cachedData;
+      }
+
       return new Promise((resolve, reject) => {
         GM_xmlhttpRequest({
           method: "GET",
@@ -498,6 +512,9 @@
               const result = JSON.parse(response.responseText);
               console.log("解析分类列表:", result);
               if (result.success) {
+                // 缓存数据
+                GM_setValue("categories", result.data || []);
+                GM_setValue("categoriesTime", now);
                 resolve(result.data || []);
               } else {
                 reject(result.message || "获取分类失败");
@@ -612,6 +629,7 @@
     modal: null,
     categories: [],
     selectedCategory: null,
+    isFirstVisit: true,
 
     async init() {
       console.log("初始化收藏工具...");
@@ -625,7 +643,13 @@
         this.categories = await utils.getCategories();
         console.log("分类加载完成:", this.categories);
         this.renderCategories();
-        utils.notify("准备就绪 ✨", "点击收藏按钮开始使用");
+
+        // 检查是否是首次访问
+        const hasVisited = GM_getValue("hasVisited");
+        if (!hasVisited) {
+          utils.notify("准备就绪 ✨", "点击收藏按钮开始使用");
+          GM_setValue("hasVisited", true);
+        }
       } catch (error) {
         console.error("加载分类失败:", error);
         utils.notify("初始化失败", error, "error");
