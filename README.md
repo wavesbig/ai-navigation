@@ -47,6 +47,12 @@ AI 导航是一个现代化的人工智能网站导航系统，致力于帮助�
 
 ![深色模式](/public/dark.png)
 
+##### 动画效果
+
+![](https://conference-image-bed.oss-cn-shenzhen.aliyuncs.com/images/header.gif)
+![](https://conference-image-bed.oss-cn-shenzhen.aliyuncs.com/images/footer.gif)
+![](https://conference-image-bed.oss-cn-shenzhen.aliyuncs.com/images/body.gif)
+
 ## 🛠️ 开发步骤
 
 ### 1. 环境准备
