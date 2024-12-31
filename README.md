@@ -49,9 +49,9 @@ AI 导航是一个现代化的人工智能网站导航系统，致力于帮助�
 
 ##### 动画效果
 
-![](https://oss.liuyaowen.cn/images/footer.gif)
-![](https://oss.liuyaowen.cn/images/all.gif)
-![](https://oss.liuyaowen.cn/images/header-1735608882123.gif)
+![](/public/all.gif)
+![](/public/footer.gif)
+![](/public/header-1735608882123.gif)
 
 ## 🛠️ 开发步骤
 
