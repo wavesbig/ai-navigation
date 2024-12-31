@@ -30,14 +30,13 @@ export default function WebsiteGrid({
   const [isCompact, setIsCompact] = useAtom(isCompactModeAtom);
   const [_, setWebsites] = useAtom(websitesAtom);
 
-  // 不需要等待，直接打开网站
   const handleVisit = async (website: Website) => {
     fetch(`/api/websites/${website.id}/visit`, { method: "POST" });
     window.open(website.url, "_blank");
   };
 
   const handleStatusUpdate = async (id: number, status: Website["status"]) => {
-    const response = fetch(`/api/websites/${id}/status`, {
+    fetch(`/api/websites/${id}/status`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -98,7 +97,7 @@ export default function WebsiteGrid({
               </div>
             </motion.div>
           ) : (
-            websites.map((website) => (
+            websites.map((website, index) => (
               <motion.div
                 key={website.id}
                 layout
@@ -109,6 +108,7 @@ export default function WebsiteGrid({
                   type: "spring",
                   stiffness: 300,
                   damping: 30,
+                  delay: index * 0.05,
                 }}
               >
                 {isCompact ? (
