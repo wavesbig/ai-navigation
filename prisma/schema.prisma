@@ -6,9 +6,8 @@ generator client {
 }
 
 datasource db {
-  provider  = "postgresql"
+  provider  = "mysql"
   url       = env("DATABASE_URL") // uses connection pooling
-  directUrl = env("DIRECT_URL") // uses a direct connection
 }
 
 model Setting {
@@ -30,6 +29,7 @@ model Website {
   category    Category @relation(fields: [category_id], references: [id])
   category_id Int
   thumbnail   String?
+  thumbnail_base64 String?
   status      String   @default("pending")
   visits      Int      @default(0)
   likes       Int      @default(0)

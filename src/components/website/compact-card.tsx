@@ -68,18 +68,15 @@ export function CompactCard({ website, onVisit }: CompactCardProps) {
         <Card
           className={cn(
             "group relative flex flex-col overflow-hidden",
-            "bg-background/30 backdrop-blur-md backdrop-saturate-150",
+            "bg-background",
             "border-primary/15 dark:border-white/10",
             "hover:border-primary/20 dark:hover:border-primary/20",
-            "hover:bg-background/50 hover:backdrop-blur-xl",
+            "hover:bg-background",
             "shadow-sm hover:shadow-lg",
             "transition-colors duration-300",
             "rounded-2xl sm:rounded-lg"
           )}
         >
-          {/* Background Gradient */}
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background/5 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-700" />
-
           {/* Content */}
           <div className="relative py-2 px-3 sm:p-3 flex flex-col gap-2">
             <div className="flex items-center gap-3">

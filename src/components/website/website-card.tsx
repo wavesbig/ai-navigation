@@ -41,9 +41,6 @@ export function WebsiteCard({
 }: WebsiteCardProps) {
   const [likes, setLikes] = useState(website.likes);
   const { cardRef, tiltProps } = useCardTilt();
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-  const [isHovered, setIsHovered] = useState(false);
-  const mouseMoveThrottleRef = useRef<number>();
 
   const statusColors: Record<Website["status"], string> = {
     pending: "bg-yellow-500/10 text-yellow-600 dark:text-yellow-400",
@@ -83,40 +80,16 @@ export function WebsiteCard({
     setLikes(likes + 1);
   };
 
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (mouseMoveThrottleRef.current) return;
-
-    mouseMoveThrottleRef.current = window.setTimeout(() => {
-      mouseMoveThrottleRef.current = undefined;
-    }, 16); // 约60fps的节流
-
-    const rect = e.currentTarget.getBoundingClientRect();
-    const x = ((e.clientX - rect.left) / rect.width) * 100;
-    const y = ((e.clientY - rect.top) / rect.height) * 100;
-    setMousePosition({ x, y });
-  };
-
-  useEffect(() => {
-    return () => {
-      if (mouseMoveThrottleRef.current) {
-        clearTimeout(mouseMoveThrottleRef.current);
-      }
-    };
-  }, []);
-
   return (
     <div
       ref={cardRef}
       onMouseMove={(e) => {
-        handleMouseMove(e);
         tiltProps.onMouseMove?.(e);
       }}
       onMouseEnter={(e) => {
-        setIsHovered(true);
         tiltProps.onMouseEnter?.(e);
       }}
       onMouseLeave={(e) => {
-        setIsHovered(false);
         tiltProps.onMouseLeave?.(e);
       }}
       className="card-container relative [perspective:1000px]"
@@ -133,39 +106,18 @@ export function WebsiteCard({
         <Card
           className={cn(
             "group relative flex flex-col overflow-hidden",
-            "bg-background/10 backdrop-blur-2xl backdrop-saturate-150",
+            "bg-background",
             "border-white/5 dark:border-white/10",
-            "hover:bg-background/15 hover:backdrop-blur-3xl hover:backdrop-saturate-200",
+            "hover:bg-background/95",
             "shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)]",
             "dark:shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:hover:shadow-[0_8px_30px_rgb(0,0,0,0.15)]",
             "transition-all duration-500 ease-out",
-            "rounded-2xl sm:rounded-lg",
-            "before:absolute before:inset-[1px] before:rounded-[inherit] before:bg-white/[0.02] before:backdrop-blur-xl before:backdrop-saturate-150 before:z-[1]"
+            "rounded-2xl sm:rounded-lg"
           )}
         >
-          {/* Mouse Light Effect */}
-          <div
-            className={cn(
-              "absolute inset-[-2px] z-[2]",
-              "rounded-[inherit]",
-              "transition-opacity duration-300",
-              "pointer-events-none overflow-hidden",
-              "bg-[radial-gradient(200px_circle_at_var(--mouse-x)_var(--mouse-y),rgba(59,130,246,0.15),transparent_70%)]",
-              isHovered ? "opacity-100" : "opacity-0"
-            )}
-            style={
-              {
-                transform: "translateZ(0)",
-                "--mouse-x": `${mousePosition.x}%`,
-                "--mouse-y": `${mousePosition.y}%`,
-              } as React.CSSProperties
-            }
-          />
-
           {/* Background Gradient */}
           <div className="absolute inset-0 z-[3]">
-            <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-background/5 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-700" />
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_120%,rgba(120,119,198,0.1),rgba(255,255,255,0))] dark:bg-[radial-gradient(circle_at_50%_120%,rgba(120,119,198,0.15),rgba(255,255,255,0))]" />
+            <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background/5 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-700" />
           </div>
 
           {/* Card Content Container */}
@@ -197,7 +149,7 @@ export function WebsiteCard({
                 variant="outline"
                 className={cn(
                   "text-[10px] sm:text-xs font-normal",
-                  "bg-background/50 backdrop-blur-sm shrink-0",
+                  "bg-background shrink-0",
                   "absolute top-1.5 right-1.5 sm:static",
                   "rounded-xl sm:rounded-lg"
                 )}

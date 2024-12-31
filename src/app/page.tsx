@@ -26,7 +26,7 @@ export default async function Home() {
             likes: true,
           },
         }),
-      { ttl: 86400 } // 1天缓存
+      { ttl: 1 } // 1天缓存
     ),
     cachedPrismaQuery(
       "all-categories",
@@ -38,7 +38,7 @@ export default async function Home() {
             slug: true,
           },
         }),
-      { ttl: 604800 } // 1周缓存
+      { ttl: 1 } // 1周缓存
     ),
   ]);
 

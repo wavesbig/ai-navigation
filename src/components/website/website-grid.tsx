@@ -16,12 +16,14 @@ interface WebsiteGridProps {
   websites: Website[];
   categories: Category[];
   onVisit: (website: Website) => void;
+  className?: string;
 }
 
 export default function WebsiteGrid({
   websites,
   categories,
   onVisit,
+  className,
 }: WebsiteGridProps) {
   const isAdmin = useAtomValue(isAdminModeAtom);
   const { toast } = useToast();
@@ -58,7 +60,7 @@ export default function WebsiteGrid({
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="relative min-h-[500px]"
+      className={cn("relative min-h-[500px]", className)}
       layout
     >
       <ViewModeToggle isCompact={isCompact} onChange={setIsCompact} />
@@ -68,7 +70,7 @@ export default function WebsiteGrid({
         className={cn(
           "grid gap-2 sm:gap-4",
           isCompact
-            ? "grid-cols-1"
+            ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
             : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
         )}
       >

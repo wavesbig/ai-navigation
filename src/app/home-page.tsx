@@ -56,8 +56,6 @@ export default function HomePage({
     if (!websites) return;
 
     const filtered = websites.filter((website) => {
-      if (!website || website.status !== "approved") return false;
-
       const matchesSearch =
         !searchQuery ||
         website.title.toLowerCase().includes(searchQuery.toLowerCase()) ||

@@ -50,7 +50,7 @@ export async function POST(request: Request) {
       });
     }
 
-    console.log(data)
+    console.log(data);
 
     // Check if URL already exists
     const existingWebsite = await prisma.website.findFirst({
@@ -72,6 +72,11 @@ export async function POST(request: Request) {
       });
     }
 
+    // 将图片转换为base64
+    const image = await fetch(data.thumbnail);
+    const imageBlob = await image.blob();
+    const imageBase64 = await imageBlob.text();
+
     const website = await prisma.website.create({
       data: {
         title: data.title.trim(),
@@ -80,6 +85,7 @@ export async function POST(request: Request) {
         category_id: Number(data.category_id),
         thumbnail: data.thumbnail?.trim() || "",
         status: data.status || "pending",
+        thumbnail_base64: imageBase64,
       },
     });
 

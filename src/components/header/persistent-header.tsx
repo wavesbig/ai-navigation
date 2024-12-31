@@ -18,35 +18,9 @@ export function PersistentHeader({
   searchQuery,
   onSearchChange,
   categories,
-  isScrolled,
 }: PersistentHeaderProps) {
-  const [opacity, setOpacity] = useState(0);
-  const maxScroll = 200;
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const scrollY = window.scrollY;
-      const newOpacity = Math.min(scrollY / maxScroll, 1);
-      setOpacity(newOpacity);
-    };
-
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    handleScroll();
-
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
   return (
-    <div
-      className="sticky top-14 z-40 w-full transition-[background,border] duration-100 md:duration-300"
-      style={{
-        background: `rgba(var(--background), ${opacity * 0.8})`,
-        backdropFilter: `blur(${opacity * 8}px)`,
-        WebkitBackdropFilter: `blur(${opacity * 8}px)`,
-        borderBottom:
-          opacity > 0 ? "1px solid rgba(var(--border), 0.1)" : "none",
-      }}
-    >
+    <div className="sticky top-14 z-40 w-full transition-[background,border] duration-100 md:duration-300">
       <div className="w-full px-2 py-3 sm:py-2 md:px-4 md:py-4">
         <div className="max-w-2xl mx-auto space-y-4 sm:space-y-3 md:space-y-4">
           <div className="relative h-[36px] sm:h-[40px] md:h-[44px]">

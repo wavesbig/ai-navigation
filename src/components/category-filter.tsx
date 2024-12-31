@@ -52,6 +52,7 @@ export default function CategoryFilter({ categories }: CategoryFilterProps) {
   useEffect(() => {
     setMounted(true);
   }, []);
+
   const selectedCategoryName = selectedCategory
     ? categories?.find((c) => c.id === Number(selectedCategory))?.name ||
       "未知分类"
@@ -100,7 +101,6 @@ export default function CategoryFilter({ categories }: CategoryFilterProps) {
   };
 
   const visibleCategories = [
-    { id: null, name: "全部" },
     ...(categories?.slice(visibleRange.start, visibleRange.end) || []),
   ];
 
@@ -154,16 +154,6 @@ export default function CategoryFilter({ categories }: CategoryFilterProps) {
               transition={{ type: "spring", stiffness: 200, damping: 20 }}
               className="py-1"
             >
-              <DropdownMenuItem
-                onClick={() => handleCategorySelect(null)}
-                className={`${
-                  selectedCategory === null
-                    ? "bg-primary/10 text-primary font-medium"
-                    : "text-foreground/80 hover:text-foreground"
-                } h-11 flex items-center px-4 hover:bg-accent/50 focus:bg-accent active:bg-accent/70 transition-colors duration-200`}
-              >
-                全部
-              </DropdownMenuItem>
               {categories.map((category) => (
                 <DropdownMenuItem
                   key={category.id}
