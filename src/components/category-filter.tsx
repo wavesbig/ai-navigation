@@ -56,17 +56,13 @@ export default function CategoryFilter({ categories }: CategoryFilterProps) {
   const selectedCategoryName = selectedCategory
     ? categories?.find((c) => c.id === Number(selectedCategory))?.name ||
       "未知分类"
-    : "全部";
+    : categories[0]?.name || "未知分类";
 
-  const handleCategorySelect = (categoryId: number | null) => {
-    setSelectedCategory(categoryId === null ? null : categoryId);
-    if (categoryId !== null) {
-      const index = categories.findIndex((c) => c.id === categoryId);
-      if (index !== -1) {
-        centerCategory(index);
-      }
-    } else {
-      setVisibleRange({ start: 0, end: 5 });
+  const handleCategorySelect = (categoryId: number) => {
+    setSelectedCategory(categoryId);
+    const index = categories.findIndex((c) => c.id === categoryId);
+    if (index !== -1) {
+      centerCategory(index);
     }
   };
 
@@ -201,9 +197,7 @@ export default function CategoryFilter({ categories }: CategoryFilterProps) {
                       onClick={() => handleCategorySelect(category.id)}
                       className={`h-8 px-4 text-sm whitespace-nowrap transition-colors duration-300 rounded-md
                         ${
-                          (category.id === null && selectedCategory === null) ||
-                          (category.id !== null &&
-                            selectedCategory === category.id)
+                          selectedCategory === category.id
                             ? "bg-white dark:bg-primary text-primary dark:text-primary-foreground font-medium shadow-[0_2px_12px_-2px_rgba(0,0,0,0.2)] dark:shadow-[0_2px_12px_-2px_rgba(0,0,0,0.4)]"
                             : "text-muted-foreground hover:text-foreground hover:bg-background/40"
                         }`}
