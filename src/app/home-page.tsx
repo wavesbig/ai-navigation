@@ -35,7 +35,6 @@ export default function HomePage({
   const [categories, setCategories] = useAtom(categoriesAtom);
   const [searchQuery, setSearchQuery] = useAtom(searchQueryAtom);
   const [selectedCategory] = useAtom(selectedCategoryAtom);
-  const contentRef = useRef<HTMLDivElement>(null);
   const { scrollY } = useScroll();
   const { theme } = useTheme();
   // Enhanced scroll-based animations
@@ -85,7 +84,7 @@ export default function HomePage({
   };
 
   return (
-    <div className="relative min-h-screen" ref={contentRef}>
+    <div className="relative min-h-screen">
       {/* Animated Background */}
       <motion.div
         className="fixed inset-0 -z-10 overflow-hidden"

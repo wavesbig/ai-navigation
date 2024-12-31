@@ -75,7 +75,11 @@ export async function POST(request: Request) {
     // 将图片转换为base64
     const image = await fetch(data.thumbnail);
     const imageBlob = await image.blob();
-    const imageBase64 = await imageBlob.text();
+    const imageBase64 = await new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result);
+      reader.readAsDataURL(imageBlob);
+    });
 
     const website = await prisma.website.create({
       data: {
@@ -85,7 +89,7 @@ export async function POST(request: Request) {
         category_id: Number(data.category_id),
         thumbnail: data.thumbnail?.trim() || "",
         status: data.status || "pending",
-        thumbnail_base64: imageBase64,
+        thumbnail_base64: imageBase64 as string,
       },
     });
 

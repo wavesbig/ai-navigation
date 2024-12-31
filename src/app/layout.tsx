@@ -7,6 +7,13 @@ import Footer from "@/components/footer/index";
 import SWRProvider from "@/components/providers/swr-provider";
 import { Analytics as VercelAnalytics } from "@vercel/analytics/react";
 import { Analytics as OtherAnalytics } from "@/components/analytics";
+import { thumbnailUpdateJob } from "@/lib/tasks/cron";
+
+// 启动定时任务
+if (process.env.NODE_ENV === "production") {
+  thumbnailUpdateJob.start();
+}
+
 export default function RootLayout({
   children,
 }: {
@@ -25,12 +32,9 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <StoreProvider>
-            <SWRProvider>
-              <div className="fixed inset-0 bg-gradient-to-br from-primary/5 via-background to-secondary/5 dark:from-primary/10 dark:via-background dark:to-secondary/10 -z-10" />
-              <Header />
-              <main className="flex-1">{children}</main>
-              <Footer />
-            </SWRProvider>
+            <Header />
+            <main className="flex-1">{children}</main>
+            <Footer />
             <Toaster />
           </StoreProvider>
         </ThemeProvider>

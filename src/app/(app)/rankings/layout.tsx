@@ -7,7 +7,7 @@ export default function RankingsLayout({
 }) {
   return (
     <>
-      <div className="flex flex-col items-center justify-center gap-4 text-center bg-background pt-12">
+      <div className="flex flex-col items-center justify-center gap-4 text-center pt-12">
         <div className="relative">
           <div className="absolute inset-0 blur-2xl bg-primary/10 rounded-full" />
           <Trophy className="h-16 w-16 text-primary relative" />
