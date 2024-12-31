@@ -54,7 +54,7 @@ export default function Header() {
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Link href="/scripts/ai-nav-collector.user.js">
+                  <Link href="/scripts/tamper-monkey-script.user.js">
                     <Button
                       variant="ghost"
                       size="sm"
