@@ -83,15 +83,9 @@ export function WebsiteCard({
   return (
     <div
       ref={cardRef}
-      onMouseMove={(e) => {
-        tiltProps.onMouseMove?.(e);
-      }}
-      onMouseEnter={(e) => {
-        tiltProps.onMouseEnter?.(e);
-      }}
-      onMouseLeave={(e) => {
-        tiltProps.onMouseLeave?.(e);
-      }}
+      onMouseMove={tiltProps.onMouseMove}
+      onMouseEnter={tiltProps.onMouseEnter}
+      onMouseLeave={tiltProps.onMouseLeave}
       className="card-container relative [perspective:1000px]"
     >
       <motion.div
@@ -128,6 +122,7 @@ export function WebsiteCard({
                 <WebsiteThumbnail
                   url={website.url}
                   thumbnail={website.thumbnail}
+                  thumbnail_base64={website.thumbnail_base64}
                   title={website.title}
                 />
                 <div className="space-y-0.5 min-w-0">

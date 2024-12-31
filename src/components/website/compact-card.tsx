@@ -83,6 +83,7 @@ export function CompactCard({ website, onVisit }: CompactCardProps) {
               <WebsiteThumbnail
                 url={website.url}
                 thumbnail={website.thumbnail}
+                thumbnail_base64={website.thumbnail_base64}
                 title={website.title}
                 className="w-9 h-9 sm:w-10 sm:h-10"
               />

@@ -8,6 +8,7 @@ import Image from "next/image";
 interface WebsiteThumbnailProps {
   url: string;
   thumbnail: string | null;
+  thumbnail_base64: string | null;
   title: string;
   className?: string;
 }
@@ -15,14 +16,16 @@ interface WebsiteThumbnailProps {
 export function WebsiteThumbnail({
   url,
   thumbnail,
+  thumbnail_base64,
   title,
   className,
 }: WebsiteThumbnailProps) {
   const [imageError, setImageError] = useState(false);
   const hostname = new URL(url).hostname;
   const faviconUrl = `https://icon.horse/icon/${hostname}`;
+  const thumbnailSrc = thumbnail_base64 || thumbnail || "";
 
-  if (!thumbnail || imageError) {
+  if ((!thumbnail_base64 && !thumbnail) || imageError) {
     return (
       <div
         className={cn(
@@ -59,7 +62,7 @@ export function WebsiteThumbnail({
       )}
     >
       <Image
-        src={thumbnail}
+        src={thumbnailSrc}
         alt={title}
         fill
         sizes="40px"
