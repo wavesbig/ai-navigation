@@ -74,12 +74,10 @@ export async function POST(request: Request) {
 
     // 将图片转换为base64
     const image = await fetch(data.thumbnail);
-    const imageBlob = await image.blob();
-    const imageBase64 = await new Promise((resolve) => {
-      const reader = new FileReader();
-      reader.onloadend = () => resolve(reader.result);
-      reader.readAsDataURL(imageBlob);
-    });
+    const imageBuffer = await image.arrayBuffer();
+    const imageBase64 = `data:${image.headers.get(
+      "content-type"
+    )};base64,${Buffer.from(imageBuffer).toString("base64")}`;
 
     const website = await prisma.website.create({
       data: {
