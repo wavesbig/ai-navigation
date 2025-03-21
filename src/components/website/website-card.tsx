@@ -1,17 +1,15 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { useAtomValue } from "jotai";
 import { Card } from "@/ui/common/card";
 import { Button } from "@/ui/common/button";
 import { Badge } from "@/ui/common/badge";
 import {
-  ExternalLink,
   ThumbsUp,
   ThumbsDown,
-  Globe,
   ArrowUpRight,
   Heart,
+  Circle,
 } from "lucide-react";
 import { cn } from "@/lib/utils/utils";
 import {
@@ -19,10 +17,16 @@ import {
   sharedLayoutTransition,
 } from "@/ui/animation/variants/animations";
 import type { Website, Category } from "@/lib/types";
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
 import { WebsiteThumbnail } from "./website-thumbnail";
 import { toast } from "@/hooks/use-toast";
 import { useCardTilt } from "@/hooks/use-card-tilt";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/ui/common/tooltip";
 
 interface WebsiteCardProps {
   website: Website;
@@ -109,6 +113,27 @@ export function WebsiteCard({
             "rounded-2xl sm:rounded-lg"
           )}
         >
+          {/* 状态指示点 */}
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div className="absolute top-0 right-0 z-10 w-6 h-6 flex justify-center items-center">
+                  <Circle
+                    className={cn(
+                      "w-2 h-2",
+                      website.active
+                        ? "fill-green-500 text-green-500"
+                        : "fill-red-500 text-red-500"
+                    )}
+                  />
+                </div>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>{website.active ? "网站可访问" : "网站不可访问"}</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+
           {/* Background Gradient */}
           <div className="absolute inset-0 z-[3]">
             <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background/5 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-700" />

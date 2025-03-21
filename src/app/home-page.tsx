@@ -32,6 +32,7 @@ export default function HomePage({
   initialCategories,
 }: HomePageProps) {
   const [websites, setWebsites] = useAtom(websitesAtom);
+  console.log("🚀 ~ websites:", websites);
   const [categories, setCategories] = useAtom(categoriesAtom);
   const [searchQuery, setSearchQuery] = useAtom(searchQueryAtom);
   const [selectedCategory] = useAtom(selectedCategoryAtom);

@@ -8,7 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { WebsiteCard } from "./website-card";
 import { CompactCard } from "./compact-card";
 import { ViewModeToggle } from "./view-mode-toggle";
-import { cn } from "@/lib/utils/utils";
+import { checkUrlActive, cn } from "@/lib/utils/utils";
 import type { Website, Category } from "@/lib/types";
 import { Globe } from "lucide-react";
 
@@ -32,6 +32,16 @@ export default function WebsiteGrid({
 
   const handleVisit = async (website: Website) => {
     fetch(`/api/websites/${website.id}/visit`, { method: "POST" });
+    // 先检查网站是否可访问
+    const checkResponse = await fetch("/api/check-url", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ url: website.url }),
+    });
+    console.log("🚀 ~ handleVisit ~ checkResponse:", checkResponse);
+
     window.open(website.url, "_blank");
   };
 

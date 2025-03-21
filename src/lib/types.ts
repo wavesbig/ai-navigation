@@ -6,6 +6,7 @@ export interface Website {
   category_id: number;
   thumbnail: string | null;
   thumbnail_base64: string | null;
+  active: number;
   status: string;
   visits: number;
   likes: number;

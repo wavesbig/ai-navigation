@@ -33,6 +33,7 @@ model Website {
   status      String   @default("pending")
   visits      Int      @default(0)
   likes       Int      @default(0)
+  active      Int      @default(1)
   created_at  DateTime @default(now())
   updated_at  DateTime @updatedAt
 

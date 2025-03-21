@@ -25,6 +25,7 @@ export default async function Home() {
             status: true,
             visits: true,
             likes: true,
+            active: true,
           },
         }),
       { ttl: 1 } // 1天缓存
