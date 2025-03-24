@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useAtom } from "jotai";
 import {
   motion,
@@ -32,7 +32,7 @@ export default function HomePage({
   initialCategories,
 }: HomePageProps) {
   const [websites, setWebsites] = useAtom(websitesAtom);
-  console.log("🚀 ~ websites:", websites);
+  // console.log("🚀 ~ websites:", websites);
   const [categories, setCategories] = useAtom(categoriesAtom);
   const [searchQuery, setSearchQuery] = useAtom(searchQueryAtom);
   const [selectedCategory] = useAtom(selectedCategoryAtom);
@@ -67,7 +67,7 @@ export default function HomePage({
       return matchesSearch && matchesCategory;
     });
 
-    setFilteredWebsites(filtered as any);
+    setFilteredWebsites(filtered);
   }, [websites, searchQuery, selectedCategory]);
 
   // 处理主题切换
@@ -79,10 +79,10 @@ export default function HomePage({
     }
   }, [theme]);
 
-  const handleVisit = (website: Website) => {
-    fetch(`/api/websites/${website.id}/visit`, { method: "POST" });
-    window.open(website.url, "_blank");
-  };
+  // const handleVisit = (website: Website) => {
+  //   fetch(`/api/websites/${website.id}/visit`, { method: "POST" });
+  //   window.open(website.url, "_blank");
+  // };
 
   return (
     <div className="relative min-h-screen">
@@ -205,7 +205,7 @@ export default function HomePage({
           <WebsiteGrid
             websites={filteredWebsites}
             categories={categories}
-            onVisit={handleVisit}
+            // onVisit={handleVisit}
           />
         </motion.div>
       </motion.div>
