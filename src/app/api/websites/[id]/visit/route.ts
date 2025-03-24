@@ -5,9 +5,14 @@ import { AjaxResponse } from "@/lib/utils";
 const prisma = new PrismaClient();
 
 // POST /api/websites/[id]/visit
-export async function POST({ params }: { params: Promise<{ id: string }> }) {
+export async function POST(
+  request: Request,
+  props: { params: Promise<{ id: string }> }
+) {
   try {
-    const websiteId = parseInt((await params).id);
+    const params = await props.params;
+    const websiteId = parseInt(params.id);
+
     if (isNaN(websiteId)) {
       return NextResponse.json(AjaxResponse.fail("Invalid website ID"), {
         status: 400,
