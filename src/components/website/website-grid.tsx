@@ -32,7 +32,7 @@ export default function WebsiteGrid({
 
   const handleVisit = async (website: Website) => {
     fetch(`/api/websites/${website.id}/visit`, { method: "POST" });
-    fetch(`/api/websites/check-url`, {
+    fetch(`/api/websites/active`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
