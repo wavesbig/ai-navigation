@@ -14,7 +14,7 @@ async function checkUrl(url: string): Promise<CheckUrlResponse> {
     const timeoutId = setTimeout(() => controller.abort(), 5000); // 5秒超时
 
     const response = await fetch(url, {
-      method: "HEAD",
+      method: "GET",
       signal: controller.signal,
       headers: {
         "User-Agent":
