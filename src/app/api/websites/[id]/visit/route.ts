@@ -19,16 +19,6 @@ export async function POST(
       });
     }
 
-    const website = await prisma.website.findUnique({
-      where: { id: websiteId },
-    });
-
-    if (!website) {
-      return NextResponse.json(AjaxResponse.fail("Website not found"), {
-        status: 404,
-      });
-    }
-
     const updatedWebsite = await prisma.website.update({
       where: { id: websiteId },
       data: { visits: { increment: 1 } },
