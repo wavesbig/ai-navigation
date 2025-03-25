@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card } from "@/ui/common/card";
 import { Button } from "@/ui/common/button";
@@ -10,22 +10,20 @@ import { cn } from "@/lib/utils/utils";
 import type { Website } from "@/lib/types";
 
 interface RankingsProps {
-  websites: Website[];
+  topVisits: Website[];
+  topLikes: Website[];
   onVisit: (website: Website) => void;
 }
 
-export function Rankings({ websites, onVisit }: RankingsProps) {
+export function Rankings({ topVisits, topLikes, onVisit }: RankingsProps) {
   const [activeTab, setActiveTab] = useState<"visits" | "likes">("visits");
 
-  // 只取前5名
-  const sortedWebsites = [...websites]
-    .sort((a, b) => {
-      if (activeTab === "visits") {
-        return b.visits - a.visits;
-      }
-      return b.likes - a.likes;
-    })
-    .slice(0, 5); // Top 5
+  const sortedWebsites = useMemo(() => {
+    if (activeTab === "visits") {
+      return topVisits;
+    }
+    return topLikes;
+  }, [activeTab, topVisits, topLikes]);
 
   const getRankIcon = (index: number) => {
     switch (index) {

@@ -4,7 +4,13 @@ import { Rankings } from "@/components/website/rankings";
 import { Website } from "@/lib/types";
 import { toast } from "@/hooks/use-toast";
 
-export function RankingsClient({ websites }: { websites: Website[] }) {
+export function RankingsClient({
+  topVisits,
+  topLikes,
+}: {
+  topVisits: Website[];
+  topLikes: Website[];
+}) {
   const handleVisit = async (website: Website) => {
     try {
       fetch(`/api/websites/${website.id}/visit`, {
@@ -22,5 +28,7 @@ export function RankingsClient({ websites }: { websites: Website[] }) {
     }
   };
 
-  return <Rankings websites={websites} onVisit={handleVisit} />;
+  return (
+    <Rankings topVisits={topVisits} topLikes={topLikes} onVisit={handleVisit} />
+  );
 }

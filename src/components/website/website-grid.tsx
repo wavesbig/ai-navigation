@@ -9,6 +9,7 @@ import { ViewModeToggle } from "./view-mode-toggle";
 import { cn } from "@/lib/utils/utils";
 import type { Website, Category } from "@/lib/types";
 import { Globe } from "lucide-react";
+import { useMemo } from "react";
 
 interface WebsiteGridProps {
   websites: Website[];
@@ -26,6 +27,14 @@ export default function WebsiteGrid({
   const { toast } = useToast();
   const [isCompact, setIsCompact] = useAtom(isCompactModeAtom);
   const [, setWebsites] = useAtom(websitesAtom);
+
+  // 预处理分类映射
+  const categoryMap = useMemo(() => {
+    return categories.reduce((acc, category) => {
+      acc[category.id] = category;
+      return acc;
+    }, {} as Record<number, Category>);
+  }, [categories]);
 
   const handleVisit = async (website: Website) => {
     fetch(`/api/websites/${website.id}/visit`, { method: "POST" });
@@ -121,9 +130,7 @@ export default function WebsiteGrid({
                 ) : (
                   <WebsiteCard
                     website={website}
-                    category={categories.find(
-                      (c) => c.id === website.category_id
-                    )}
+                    category={categoryMap[website.category_id]}
                     isAdmin={isAdmin}
                     onVisit={handleVisit}
                     onStatusUpdate={handleStatusUpdate}
