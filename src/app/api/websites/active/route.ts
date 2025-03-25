@@ -14,7 +14,7 @@ async function checkUrl(url: string): Promise<CheckUrlResponse> {
     const timeoutId = setTimeout(() => controller.abort(), 5000); // 5秒超时
 
     const response = await fetch(url, {
-      method: "GET",
+      method: "HEAD",
       signal: controller.signal,
       headers: {
         "User-Agent":
@@ -67,6 +67,6 @@ export async function POST(request: Request) {
       AjaxResponse.ok({ active: updatedWebsite.active })
     );
   } catch {
-    return NextResponse.json(AjaxResponse.fail("获取页脚链接失败"));
+    return NextResponse.json(AjaxResponse.fail("校验页面链接失败"));
   }
 }
